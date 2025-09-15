@@ -21,8 +21,11 @@ namespace ToolBuddy.LocalSpeechTranscriber
             _host = GetHost();
 
             HandleUnhandledExceptions();
+            
             _host.Start();
+            
             _host.Services.GetRequiredService<Transcriber>().Initialize();
+            _host.Services.GetRequiredService<RecordingHotkeyToggler>().Initialize();
             _host.Services.GetRequiredService<MainWindow>().Show();
         }
 
