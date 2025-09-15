@@ -2,7 +2,7 @@ using System.Windows.Input;
 
 namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 {
-    public class RelayCommand(
+    public sealed class RelayCommand(
         Action<object?> execute,
         Predicate<object?>? canExecute = null)
         : ICommand
@@ -10,15 +10,16 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private readonly Action<object?> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 
         public bool CanExecute(
-            object? parameter) => canExecute == null || canExecute(parameter);
+            object? parameter) => canExecute?.Invoke(parameter) ?? true;
 
         public void Execute(
             object? parameter) => _execute(parameter);
 
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
+        public event EventHandler? CanExecuteChanged;
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(
+            this,
+            EventArgs.Empty
+        );
     }
 }

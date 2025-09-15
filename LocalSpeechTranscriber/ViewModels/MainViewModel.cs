@@ -1,26 +1,28 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using ToolBuddy.LocalSpeechTranscriber.Services;
 
 namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     {
         private readonly Transcriber _transcriber;
-        private readonly BitmapImage _notRecordingIcon = new(new Uri("pack://application:,,,/Assets/not-recording.png"));
-        private readonly BitmapImage _recordingIcon = new(new Uri("pack://application:,,,/Assets/recording.png"));
-
+        private readonly BitmapImage _notRecordingIcon;
+        private readonly BitmapImage _recordingIcon;
+        private readonly Dispatcher _ui;
         private bool _isRecording;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private bool IsRecording
         {
             get => _isRecording;
             set
             {
-                if (_isRecording == value)
-                    return;
+                if (_isRecording == value) return;
 
                 _isRecording = value;
                 OnPropertyChanged(nameof(RecordButtonText));
@@ -46,9 +48,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             }
         }
 
-        public string TranscriptionText =>
-            _transcriber.TranscriptionText;
-
         public string RecordButtonText => IsRecording
             ? "Stop Recording"
             : "Start Recording";
@@ -57,60 +56,90 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             ? _recordingIcon
             : _notRecordingIcon;
 
-        public bool CanRecord =>
-            _transcriber.IsInitialized;
+        public string TranscriptionText => _transcriber.TranscriptionText;
 
-        public ICommand ToggleRecordingCommand { get; }
+        public bool CanRecord => _transcriber.IsInitialized;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public RelayCommand ToggleRecordingCommand { get; }
 
         public MainViewModel(
             Transcriber transcriber)
         {
+            _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+
             _transcriber = transcriber;
-            _transcriber.Initialized += (
-                _,
-                _) =>
-            {
-                OnPropertyChanged(nameof(StatusText));
-            };
+            _notRecordingIcon = new(new Uri("pack://application:,,,/Assets/not-recording.png"));
+            _recordingIcon = new(new Uri("pack://application:,,,/Assets/recording.png"));
+            _notRecordingIcon.Freeze();
+            _recordingIcon.Freeze();
 
-            _transcriber.RecordingStarted += (
-                _,
-                _) =>
-            {
-                IsRecording = true;
-            };
-            _transcriber.RecordingStopped += (
-                _,
-                _) =>
-            {
-                IsRecording = false;
-            };
-
-            _transcriber.TextTyped += (
-                _,
-                _) =>
-            {
-                OnPropertyChanged(nameof(TranscriptionText));
-            };
+            _transcriber.Initialized += OnTranscriberInitialized;
+            _transcriber.RecordingStarted += OnRecordingStarted;
+            _transcriber.RecordingStopped += OnRecordingStopped;
+            _transcriber.TextTyped += OnTextTyped;
 
             ToggleRecordingCommand = new RelayCommand(
-                _ => ToggleRecording(),
+                _ => _transcriber.ToggleRecording(),
                 _ => CanRecord
             );
         }
 
+        private void OnTranscriberInitialized(
+            object? sender,
+            EventArgs e) =>
+            _ui.BeginInvoke(
+                DispatcherPriority.DataBind,
+                new Action(() =>
+                    {
+                        OnPropertyChanged(nameof(CanRecord));
+                        OnPropertyChanged(nameof(StatusText));
+                        OnPropertyChanged(nameof(RecordButtonIcon));
+                        OnPropertyChanged(nameof(RecordButtonText));
 
-        private void ToggleRecording() =>
-            _transcriber.ToggleRecording();
+                        ToggleRecordingCommand.RaiseCanExecuteChanged();
+                    }
+                )
+            );
 
+        private void OnRecordingStarted(
+            object? sender,
+            EventArgs e) =>
+            _ui.BeginInvoke(
+                DispatcherPriority.DataBind,
+                new Action(() => IsRecording = true)
+            );
 
-        protected virtual void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null) =>
-            PropertyChanged?.Invoke(
+        private void OnRecordingStopped(
+            object? sender,
+            EventArgs e) =>
+            _ui.BeginInvoke(
+                DispatcherPriority.DataBind,
+                new Action(() => IsRecording = false)
+            );
+
+        private void OnTextTyped(
+            object? sender,
+            string _) =>
+            _ui.BeginInvoke(
+                DispatcherPriority.DataBind,
+                new Action(() =>
+                    OnPropertyChanged(nameof(TranscriptionText))
+                )
+            );
+
+        private void OnPropertyChanged(
+            [CallerMemberName] string? propertyName = null)
+            => PropertyChanged?.Invoke(
                 this,
                 new PropertyChangedEventArgs(propertyName)
             );
+
+        public void Dispose()
+        {
+            _transcriber.Initialized -= OnTranscriberInitialized;
+            _transcriber.RecordingStarted -= OnRecordingStarted;
+            _transcriber.RecordingStopped -= OnRecordingStopped;
+            _transcriber.TextTyped -= OnTextTyped;
+        }
     }
 }
