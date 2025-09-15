@@ -6,7 +6,7 @@ using ToolBuddy.LocalSpeechTranscriber.Settings;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
-    public class RecordingHotkeyToggler(IOptions<HotkeysSettings> hotkeysSettings, Transcriber transcriber) : IDisposable
+    public sealed class RecordingHotkeyToggler(IOptions<HotkeysSettings> hotkeysSettings, Transcriber transcriber) : IDisposable
     {
         private const string _toggleRecordingHotkeyName = "ToggleRecording";
 

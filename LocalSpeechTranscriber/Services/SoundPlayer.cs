@@ -1,25 +1,38 @@
 ﻿namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
     //todo namespaces for all
-    public class SoundPlayer
+    public sealed class SoundPlayer: IDisposable
     {
+        private readonly Transcriber _transcriber;
+
         public SoundPlayer(
             Transcriber transcriber)
         {
-            // todo is this disposing compatible?
-            transcriber.RecordingStarted += (
-                _,
-                _) => Console.Beep(
-                330,
-                200
-            );
+            _transcriber = transcriber;
+            _transcriber.RecordingStarted += OnRecordingStarted();
+            _transcriber.RecordingStopped += OnRecordingStopped();
+        }
 
-            transcriber.RecordingStopped += (
-                _,
-                _) => Console.Beep(
-                659,
-                200
-            );
+        private static EventHandler? OnRecordingStopped() =>
+        (
+            _,
+            _) => Console.Beep(
+            659,
+            200
+        );
+
+        private static EventHandler? OnRecordingStarted() =>
+        (
+            _,
+            _) => Console.Beep(
+            330,
+            200
+        );
+
+        public void Dispose()
+        {
+            _transcriber.RecordingStarted -= OnRecordingStarted();
+            _transcriber.RecordingStopped -= OnRecordingStopped();
         }
     }
 }
