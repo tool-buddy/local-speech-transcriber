@@ -17,13 +17,12 @@ namespace ToolBuddy.LocalSpeechTranscriber
         protected override void OnStartup(
             StartupEventArgs e)
         {
-
             _host = GetHost();
 
             HandleUnhandledExceptions();
-            
+
             _host.Start();
-            
+
             _host.Services.GetRequiredService<Transcriber>().Initialize();
             _host.Services.GetRequiredService<RecordingHotkeyToggler>().Initialize();
             _host.Services.GetRequiredService<MainWindow>().Show();
@@ -54,8 +53,8 @@ namespace ToolBuddy.LocalSpeechTranscriber
                         cfg.SetBasePath(AppContext.BaseDirectory)
                             .AddJsonFile(
                                 "appsettings.json",
-                                optional: false,
-                                reloadOnChange: true
+                                false,
+                                true
                             );
                     }
                 )

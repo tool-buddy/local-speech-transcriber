@@ -9,7 +9,10 @@ namespace ToolBuddy.LocalSpeechTranscriber.Settings
         [Required]
         public WhisperModel Model { get; set; } = WhisperModel.LargeV3Turbo;
 
-        [Range(1, 65535)]
+        [Range(
+            1,
+            65535
+        )]
         public int Port { get; set; }
     }
 }

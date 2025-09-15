@@ -7,6 +7,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Settings
     {
         [Required]
         public required Key Key { get; set; }
+
         [Required]
         public required ModifierKeys[] Modifiers { get; set; }
     }
