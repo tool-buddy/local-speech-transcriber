@@ -6,26 +6,17 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
     public partial class WhisperStreamingSttEngine
     {
-        private sealed class Server : IDisposable
+        private sealed class Server(
+            int port,
+            WhisperModel model,
+            IErrorDisplayer errorDisplayer)
+            : IDisposable
         {
-            private readonly WhisperModel _model;
-            private readonly IErrorDisplayer _errorDisplayer;
-            private readonly int _port;
             private Process? _serverProcess;
 
             public event EventHandler? Started;
-            public int Port => _port;
+            public int Port => port;
 
-
-            public Server(
-                int port,
-                WhisperModel model,
-                IErrorDisplayer errorDisplayer)
-            {
-                _port = port;
-                _model = model;
-                _errorDisplayer = errorDisplayer;
-            }
 
             public void Dispose()
             {
@@ -71,7 +62,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                     FileName =
                         "C:\\Users\\Aka\\AppData\\Local\\Programs\\Python\\Python38\\python.exe", // TODO: Make this configurable
                     Arguments =
-                        $@".\whisper_streaming\whisper_online_server.py --model {_model.GetEnumMemberValue()} --port {_port} --vad",
+                        $@".\whisper_streaming\whisper_online_server.py --model {model.GetEnumMemberValue()} --port {port} --vad",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
@@ -100,12 +91,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                 if (args.Data != null)
                 {
                     if (args.Data.Contains("critical") || args.Data.Contains("Error") || args.Data.Contains("error"))
-                        _errorDisplayer.Error(
+                        errorDisplayer.Error(
                             nameof(Server),
                             args.Data
                         );
 
-                    if (args.Data.Contains($"Listening on('localhost', {_port})"))
+                    if (args.Data.Contains($"Listening on('localhost', {port})"))
                         Started
                             ?.Invoke(
                                 this,

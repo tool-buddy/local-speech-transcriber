@@ -2,21 +2,15 @@ using System.Windows.Input;
 
 namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 {
-    public class RelayCommand : ICommand
+    public class RelayCommand(
+        Action<object?> execute,
+        Predicate<object?>? canExecute = null)
+        : ICommand
     {
-        private readonly Predicate<object?>? _canExecute;
-        private readonly Action<object?> _execute;
-
-        public RelayCommand(
-            Action<object?> execute,
-            Predicate<object?>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
+        private readonly Action<object?> _execute = execute ?? throw new ArgumentNullException(nameof(execute));
 
         public bool CanExecute(
-            object? parameter) => _canExecute == null || _canExecute(parameter);
+            object? parameter) => canExecute == null || canExecute(parameter);
 
         public void Execute(
             object? parameter) => _execute(parameter);

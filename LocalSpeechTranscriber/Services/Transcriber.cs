@@ -3,12 +3,13 @@ using NAudio.Wave;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
-    public sealed class Transcriber : IDisposable
+    public sealed class Transcriber(
+        AudioRecorder audioRecorder,
+        ISttEngine sttEngine,
+        InputSimulator inputSimulator,
+        IErrorDisplayer errorDisplayer)
+        : IDisposable
     {
-        private readonly AudioRecorder _audioRecorder;
-        private readonly InputSimulator _inputSimulator;
-        private readonly IErrorDisplayer _errorDisplayer;
-        private readonly ISttEngine _sttEngine;
         private bool _isRecording;
 
         //todo just for debugging
@@ -21,32 +22,19 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         public event EventHandler? RecordingStopped;
         public event EventHandler<string>? TextTyped;
 
-        public Transcriber(
-            AudioRecorder audioRecorder,
-            ISttEngine sttEngine,
-            InputSimulator inputSimulator,
-            IErrorDisplayer errorDisplayer)
-
-        {
-            _audioRecorder = audioRecorder;
-            _sttEngine = sttEngine;
-            _inputSimulator = inputSimulator;
-            _errorDisplayer = errorDisplayer;
-        }
-
 
         public void Initialize()
         {
-            _sttEngine.Initialized += OnSttEngineInitialized;
-            _sttEngine.Initialize();
+            sttEngine.Initialized += OnSttEngineInitialized;
+            sttEngine.Initialize();
         }
 
         private void OnSttEngineInitialized(
             object? sender,
             EventArgs e)
         {
-            _audioRecorder.DataAvailable += OnAudioDataAvailable;
-            _sttEngine.Transcribed += OnSpeechTranscribed;
+            audioRecorder.DataAvailable += OnAudioDataAvailable;
+            sttEngine.Transcribed += OnSpeechTranscribed;
             IsInitialized = true;
             Initialized?.Invoke(
                 this,
@@ -61,14 +49,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             //todo async void not good
             try
             {
-                await _sttEngine.TranscribeAsync(
+                await sttEngine.TranscribeAsync(
                     args.Buffer,
                     args.BytesRecorded
                 ).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                _errorDisplayer.Exception(
+                errorDisplayer.Exception(
                     nameof(Transcriber),
                     e
                 );
@@ -99,7 +87,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             {
                 string newText = textOnly; //todo is space needed?
                 TranscriptionText += newText;
-                _inputSimulator.Keyboard.TextEntry(newText);
+                inputSimulator.Keyboard.TextEntry(newText);
                 TextTyped?.Invoke(
                     this,
                     newText
@@ -120,7 +108,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         private void StartRecording()
         {
-            _audioRecorder.Start();
+            audioRecorder.Start();
             RecordingStarted?.Invoke(
                 this,
                 EventArgs.Empty
@@ -129,7 +117,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         private void StopRecording()
         {
-            _audioRecorder.Stop();
+            audioRecorder.Stop();
             RecordingStopped?.Invoke(
                 this,
                 EventArgs.Empty
@@ -138,9 +126,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         public void Dispose()
         {
-            _sttEngine.Initialized -= OnSttEngineInitialized;
-            _audioRecorder.DataAvailable -= OnAudioDataAvailable;
-            _sttEngine.Transcribed -= OnSpeechTranscribed;
+            sttEngine.Initialized -= OnSttEngineInitialized;
+            audioRecorder.DataAvailable -= OnAudioDataAvailable;
+            sttEngine.Transcribed -= OnSpeechTranscribed;
         }
     }
 }
