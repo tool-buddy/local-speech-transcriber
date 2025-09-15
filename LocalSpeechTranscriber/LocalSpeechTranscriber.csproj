@@ -43,4 +43,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+  	<Content Include="..\Resources\whisper_streaming\**\*">
+  		<Link>whisper_streaming\%(RecursiveDir)%(Filename)%(Extension)</Link>
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</Content>
+  </ItemGroup>
+
+
 </Project>

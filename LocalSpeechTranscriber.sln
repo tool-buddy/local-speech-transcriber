@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36429.23 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSpeechTranscriber", "LocalSpeechTranscriber\LocalSpeechTranscriber.csproj", "{11B14BF5-0348-446B-8091-90606B6F7FED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11B14BF5-0348-446B-8091-90606B6F7FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11B14BF5-0348-446B-8091-90606B6F7FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11B14BF5-0348-446B-8091-90606B6F7FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11B14BF5-0348-446B-8091-90606B6F7FED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {939C6FAD-6DE0-4FE0-B2EE-C6A64CA4A04A}
+	EndGlobalSection
+EndGlobal
