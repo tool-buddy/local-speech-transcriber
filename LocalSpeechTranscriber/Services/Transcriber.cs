@@ -67,10 +67,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             object? sender,
             string transcribedText)
         {
-            List<string> tokens = transcribedText.Split(
-                [' '],
-                StringSplitOptions.RemoveEmptyEntries
-            ).ToList();
+            List<string> tokens =
+            [
+                .. transcribedText.Split(
+                    [' '],
+                    StringSplitOptions.RemoveEmptyEntries
+                )
+            ];
+
             while (tokens.Count > 0
                    && int.TryParse(
                        tokens[0],
