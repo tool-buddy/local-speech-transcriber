@@ -237,6 +237,15 @@ dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, meth
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
+dotnet_naming_symbols.private_const_field.applicable_kinds = field
+dotnet_naming_symbols.private_const_field.applicable_accessibilities = private
+dotnet_naming_symbols.private_const_field.required_modifiers = const
+
+# Naming rules
+dotnet_naming_rule.private_const_fields_should_be_pascal_case.symbols = private_const_field
+dotnet_naming_rule.private_const_fields_should_be_pascal_case.style = pascal_case
+dotnet_naming_rule.private_const_fields_should_be_pascal_case.severity = suggestion
+
 # Naming styles
 
 dotnet_naming_style.pascal_case.required_prefix = 

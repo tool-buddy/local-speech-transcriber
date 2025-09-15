@@ -8,7 +8,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
     public sealed class RecordingHotkeyToggler(IOptions<HotkeysSettings> hotkeysSettings, Transcriber transcriber) : IDisposable
     {
-        private const string _toggleRecordingHotkeyName = "ToggleRecording";
+        private const string ToggleRecordingHotkeyName = "ToggleRecording";
 
         public void Initialize()
         {
@@ -16,7 +16,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             {
                 SetupHotkey();
             }
-            catch (HotkeyAlreadyRegisteredException e)
+            catch (HotkeyAlreadyRegisteredException)
             {
                 //todo handle error
                 Console.WriteLine("Hotkey already registered.");
@@ -33,7 +33,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             );
 
             HotkeyManager.Current.AddOrReplace(
-                _toggleRecordingHotkeyName,
+                ToggleRecordingHotkeyName,
                 hotkeysSettings.Value.ToggleRecording.Key,
                 modifierKeys,
                 (
@@ -47,6 +47,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         }
 
         public void Dispose() =>
-            HotkeyManager.Current.Remove(_toggleRecordingHotkeyName);
+            HotkeyManager.Current.Remove(ToggleRecordingHotkeyName);
     }
 }
