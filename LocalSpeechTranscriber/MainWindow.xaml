@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ToolBuddy.LocalSpeechTranscriber"
         mc:Ignorable="d"
         Title="Whisper Dictation" Height="300" Width="500">
     <Window.TaskbarItemInfo>
@@ -11,9 +10,9 @@
     </Window.TaskbarItemInfo>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Button Margin="10" Padding="10" Command="{Binding ToggleRecordingCommand}" IsEnabled="{Binding CanRecord}">

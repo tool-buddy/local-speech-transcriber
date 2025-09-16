@@ -1,17 +1,14 @@
 using Microsoft.Extensions.Options;
+using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
 {
     public sealed partial class WhisperStreamingSttEngine : ISttEngine, IDisposable
     {
-        //todo review class
-        private readonly IErrorDisplayer _errorDisplayer;
         private readonly Client _client;
+        private readonly IErrorDisplayer _errorDisplayer;
         private readonly Server _server;
-
-        public event EventHandler<string>? Transcribed;
-        public event EventHandler? Initialized;
 
         public WhisperStreamingSttEngine(
             IErrorDisplayer errorDisplayer,
@@ -22,13 +19,25 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             _server = new Server(
                 whisperSettings.Value.Port,
                 whisperSettings.Value.Model,
-                errorDisplayer
+                whisperSettings.Value.PythonExecutable
             );
 
             _server.Started += OnStared;
 
-            _client = new Client();
+            _client = new Client(errorDisplayer);
         }
+
+        public void Dispose()
+        {
+            _client.TranscriptionReceived -= OnClientTranscriptionReceived;
+            _client.Dispose();
+
+            _server.Started -= OnStared;
+            _server.Dispose();
+        }
+
+        public event EventHandler<string>? Transcribed;
+        public event EventHandler? Initialized;
 
         public void Initialize() =>
             _server.Start();
@@ -41,15 +50,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                 bytesRecorded
             ).ConfigureAwait(false);
 
-        public void Dispose()
-        {
-            _client.TranscriptionReceived -= OnClientTranscriptionReceived;
-            _client.Dispose();
-
-            _server.Started -= OnStared;
-            _server.Dispose();
-        }
-
 
         private async void OnStared(
             object? sender,
@@ -57,15 +57,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         {
             try
             {
-                //todo handle async warning
+                _client.TranscriptionReceived += OnClientTranscriptionReceived;
+
                 await _client.ConnectAsync(
                     "localhost",
                     _server.Port
                 ).ConfigureAwait(false);
-
-                _client.TranscriptionReceived += OnClientTranscriptionReceived;
-
-                _client.StartListening();
 
                 Initialized?.Invoke(
                     this,

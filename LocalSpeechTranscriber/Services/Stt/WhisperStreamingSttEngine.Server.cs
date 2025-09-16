@@ -2,19 +2,16 @@ using System.Diagnostics;
 using ToolBuddy.LocalSpeechTranscriber.Extensions;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
 {
-    public partial class WhisperStreamingSttEngine
+    public sealed partial class WhisperStreamingSttEngine
     {
         private sealed class Server(
             int port,
             WhisperModel model,
-            IErrorDisplayer errorDisplayer)
-            : IDisposable
+            string pythonExecutable) : IDisposable
         {
             private Process? _serverProcess;
-
-            public event EventHandler? Started;
             public int Port => port;
 
 
@@ -23,21 +20,27 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                 if (_serverProcess == null)
                     return;
 
+                _serverProcess.Exited -= OnProcessExited;
                 _serverProcess.ErrorDataReceived -= OnErrorDataReceived;
                 _serverProcess.OutputDataReceived -= OnOutputDataReceived;
-                _serverProcess.Exited -= OnProcessExited;
 
-                //todo is this necessary?
-                if (!_serverProcess.HasExited)
-                    _serverProcess.Kill(true);
-                _serverProcess?.Dispose();
+                try
+                {
+                    if (!_serverProcess.HasExited)
+                        _serverProcess.Kill(true);
+                }
+                finally
+                {
+                    _serverProcess.Dispose();
+                }
             }
+
+            public event EventHandler? Started;
 
             public void Start()
             {
                 _serverProcess = CreateServerProcess();
                 if (_serverProcess is null)
-                    //todo handle error
                     throw new InvalidOperationException("Failed to start Whisper Streaming server process.");
 
                 if (_serverProcess.HasExited)
@@ -59,8 +62,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             {
                 ProcessStartInfo startInfo = new()
                 {
-                    FileName =
-                        "C:\\Users\\Aka\\AppData\\Local\\Programs\\Python\\Python38\\python.exe", // TODO: Make this configurable
+                    FileName = pythonExecutable,
                     Arguments =
                         $@".\whisper_streaming\whisper_online_server.py --model {model.GetEnumMemberValue()} --port {port} --vad",
                     UseShellExecute = false,
@@ -74,7 +76,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             private void OnProcessExited(
                 object? sender,
                 EventArgs e) =>
-                //todo handle error
                 throw new InvalidOperationException("Whisper Streaming server process has exited.");
 
             private void OnOutputDataReceived(
@@ -91,10 +92,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                 if (args.Data != null)
                 {
                     if (args.Data.Contains("critical") || args.Data.Contains("Error") || args.Data.Contains("error"))
-                        errorDisplayer.Error(
-                            nameof(Server),
-                            args.Data
-                        );
+                        throw new InvalidOperationException(args.Data);
 
                     if (args.Data.Contains($"Listening on('localhost', {port})"))
                         Started
