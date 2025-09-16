@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using ToolBuddy.LocalSpeechTranscriber.Extensions;
-using ToolBuddy.LocalSpeechTranscriber.Settings;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
 {
@@ -8,7 +6,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
     {
         private sealed class Server(
             int port,
-            WhisperModel model,
+            string whisperModel,
             string pythonExecutable) : IDisposable
         {
             private Process? _serverProcess;
@@ -64,7 +62,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
                 {
                     FileName = pythonExecutable,
                     Arguments =
-                        $@".\whisper_streaming\whisper_online_server.py --model {model.GetEnumMemberValue()} --port {port} --vad",
+                        $@".\whisper_streaming\whisper_online_server.py --model {whisperModel} --port {port} --vad",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,

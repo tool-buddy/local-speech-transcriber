@@ -7,7 +7,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Settings
         public const string SectionName = "Whisper";
 
         [Required]
-        public WhisperModel Model { get; set; } = WhisperModel.LargeV3Turbo;
+        [RegularExpression(
+            @"^(tiny\.en|tiny|base\.en|base|small\.en|small|medium\.en|medium|large-v1|large-v2|large-v3|large|large-v3-turbo)$",
+            ErrorMessage = "Invalid Whisper model. Valid values are: tiny.en,tiny,base.en,base,small.en,small,medium.en,medium,large-v1,large-v2,large-v3,large,large-v3-turbo"
+        )]
+        public string Model { get; set; } = "large-v3-turbo";
 
         [Range(
             1,
