@@ -9,13 +9,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 {
     public sealed class MainViewModel : INotifyPropertyChanged, IDisposable
     {
-        private readonly Transcriber _transcriber;
+        private readonly Dispatcher _dispatcher;
         private readonly BitmapImage _notRecordingIcon;
         private readonly BitmapImage _recordingIcon;
-        private readonly Dispatcher _dispatcher;
+        private readonly Transcriber _transcriber;
         private bool _isRecording;
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         private bool IsRecording
         {
@@ -68,8 +66,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             _dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
 
             _transcriber = transcriber;
-            _notRecordingIcon = new(new Uri("pack://application:,,,/Assets/not-recording.png"));
-            _recordingIcon = new(new Uri("pack://application:,,,/Assets/recording.png"));
+            _notRecordingIcon = new BitmapImage(new Uri("pack://application:,,,/Assets/not-recording.png"));
+            _recordingIcon = new BitmapImage(new Uri("pack://application:,,,/Assets/recording.png"));
             _notRecordingIcon.Freeze();
             _recordingIcon.Freeze();
 
@@ -83,6 +81,16 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
                 _ => CanRecord
             );
         }
+
+        public void Dispose()
+        {
+            _transcriber.Initialized -= OnTranscriberInitialized;
+            _transcriber.RecordingStarted -= OnRecordingStarted;
+            _transcriber.RecordingStopped -= OnRecordingStopped;
+            _transcriber.TextTyped -= OnTextTyped;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnTranscriberInitialized(
             object? sender,
@@ -133,13 +141,5 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
                 this,
                 new PropertyChangedEventArgs(propertyName)
             );
-
-        public void Dispose()
-        {
-            _transcriber.Initialized -= OnTranscriberInitialized;
-            _transcriber.RecordingStarted -= OnRecordingStarted;
-            _transcriber.RecordingStopped -= OnRecordingStopped;
-            _transcriber.TextTyped -= OnTextTyped;
-        }
     }
 }

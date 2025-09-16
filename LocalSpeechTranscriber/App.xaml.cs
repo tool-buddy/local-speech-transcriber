@@ -1,13 +1,12 @@
 ﻿using System.Windows;
-using System.Windows.Threading;
 using GregsStack.InputSimulatorStandard;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ToolBuddy.LocalSpeechTranscriber.Services;
 using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
-using ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
+using ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 using ToolBuddy.LocalSpeechTranscriber.ViewModels;
@@ -57,6 +56,11 @@ namespace ToolBuddy.LocalSpeechTranscriber
                             .AddJsonFile(
                                 "appsettings.json",
                                 false,
+                                true
+                            )
+                            .AddJsonFile(
+                                "appsettings.Local.json",
+                                true,
                                 true
                             );
                     }

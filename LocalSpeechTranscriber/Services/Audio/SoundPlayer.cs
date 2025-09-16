@@ -14,6 +14,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Audio
             _transcriber.RecordingStopped += OnRecordingStopped;
         }
 
+        public void Dispose()
+        {
+            _transcriber.Initialized -= OnTranscriberInitialized;
+            _transcriber.RecordingStarted -= OnRecordingStarted;
+            _transcriber.RecordingStopped -= OnRecordingStopped;
+        }
+
         private void OnRecordingStopped(
             object? sender,
             EventArgs e) =>
@@ -37,12 +44,5 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Audio
                 494,
                 100
             );
-
-        public void Dispose()
-        {
-            _transcriber.Initialized -= OnTranscriberInitialized;
-            _transcriber.RecordingStarted -= OnRecordingStarted;
-            _transcriber.RecordingStopped -= OnRecordingStopped;
-        }
     }
 }

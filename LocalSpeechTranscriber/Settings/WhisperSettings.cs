@@ -14,5 +14,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Settings
             65535
         )]
         public int Port { get; set; }
+
+        [Required]
+        public string PythonExecutable { get; set; } = string.Empty;
     }
 }

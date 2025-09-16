@@ -1,5 +1,8 @@
 ﻿using GregsStack.InputSimulatorStandard;
 using NAudio.Wave;
+using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
+using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
+using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
@@ -16,6 +19,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         public string TranscriptionText { get; private set; } = string.Empty;
 
         public bool IsInitialized { get; private set; }
+
+        public void Dispose()
+        {
+            sttEngine.Initialized -= OnSttEngineInitialized;
+            audioRecorder.DataAvailable -= OnAudioDataAvailable;
+            sttEngine.Transcribed -= OnSpeechTranscribed;
+        }
 
         public event EventHandler? Initialized;
         public event EventHandler? RecordingStarted;
@@ -46,7 +56,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             object? sender,
             WaveInEventArgs args)
         {
-            //todo async void not good
             try
             {
                 await sttEngine.TranscribeAsync(
@@ -126,13 +135,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
                 this,
                 EventArgs.Empty
             );
-        }
-
-        public void Dispose()
-        {
-            sttEngine.Initialized -= OnSttEngineInitialized;
-            audioRecorder.DataAvailable -= OnAudioDataAvailable;
-            sttEngine.Transcribed -= OnSpeechTranscribed;
         }
     }
 }

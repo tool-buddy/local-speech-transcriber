@@ -1,12 +1,10 @@
 using NAudio.Wave;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.Audio
 {
     public sealed class AudioRecorder : IDisposable
     {
         private readonly WaveInEvent _waveIn;
-
-        public event EventHandler<WaveInEventArgs>? DataAvailable;
 
         public AudioRecorder()
         {
@@ -22,6 +20,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             _waveIn.DataAvailable += OnWaveDataAvailable;
         }
 
+        public void Dispose()
+        {
+            _waveIn.DataAvailable -= OnWaveDataAvailable;
+            _waveIn.Dispose();
+        }
+
+        public event EventHandler<WaveInEventArgs>? DataAvailable;
+
         private void OnWaveDataAvailable(
             object? sender,
             WaveInEventArgs args) =>
@@ -35,11 +41,5 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         public void Stop() =>
             _waveIn.StopRecording();
-
-        public void Dispose()
-        {
-            _waveIn.DataAvailable -= OnWaveDataAvailable;
-            _waveIn.Dispose();
-        }
     }
 }
