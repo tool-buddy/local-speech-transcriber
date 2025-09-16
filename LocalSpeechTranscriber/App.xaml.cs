@@ -16,15 +16,11 @@ namespace ToolBuddy.LocalSpeechTranscriber
     public partial class App : Application
     {
         private IHost _host = null!;
-        private UncaughtExceptionHandler _uncaughtExceptionHandler = null!;
 
         protected override void OnStartup(
             StartupEventArgs e)
         {
             _host = GetHost();
-
-            _uncaughtExceptionHandler = new UncaughtExceptionHandler(_host);
-
             Start();
         }
 
@@ -32,6 +28,7 @@ namespace ToolBuddy.LocalSpeechTranscriber
         {
             _host.Start();
 
+            _ = _host.Services.GetRequiredService<UncaughtExceptionHandler>();
             _host.Services.GetRequiredService<Transcriber>().Initialize();
             _host.Services.GetRequiredService<RecordingHotkeyToggler>().Initialize();
             _ = _host.Services.GetRequiredService<SoundPlayer>();
@@ -41,7 +38,6 @@ namespace ToolBuddy.LocalSpeechTranscriber
         protected override void OnExit(
             ExitEventArgs e)
         {
-            _uncaughtExceptionHandler.Dispose();
             _host.Dispose();
             base.OnExit(e);
         }
@@ -71,14 +67,13 @@ namespace ToolBuddy.LocalSpeechTranscriber
                     {
                         services.AddOptions<WhisperSettings>()
                             .Bind(ctx.Configuration.GetSection(WhisperSettings.SectionName))
-                            .ValidateDataAnnotations()
-                            .ValidateOnStart();
+                            .ValidateDataAnnotations();
 
                         services.AddOptions<HotkeysSettings>()
                             .Bind(ctx.Configuration.GetSection(HotkeysSettings.SectionName))
-                            .ValidateDataAnnotations()
-                            .ValidateOnStart();
+                            .ValidateDataAnnotations();
 
+                        services.AddSingleton<UncaughtExceptionHandler>();
                         services.AddSingleton<IErrorDisplayer, WindowsErrorDisplayer>();
                         services.AddSingleton<AudioRecorder>();
                         services.AddSingleton<ISttEngine, WhisperStreamingSttEngine>();
