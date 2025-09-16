@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
@@ -10,7 +10,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
         private sealed class Client(IErrorDisplayer errorDisplayer) : IDisposable
         {
             private readonly CancellationTokenSource _cancellationTokenSource = new();
+            private readonly Regex _serverResponsePattern = new(@"^(\d+)\s(\d+)\s(.*)$");
             private readonly TcpClient _tcpClient = new();
+
             private Task? _listeningTask;
             private NetworkStream? _networkStream;
 
@@ -76,6 +78,19 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
                 );
             }
 
+            public async Task SendAudioDataAsync(
+                byte[] buffer,
+                int bytesRecorded)
+            {
+                ArgumentNullException.ThrowIfNull(_networkStream);
+
+                await _networkStream.WriteAsync(
+                    buffer,
+                    0,
+                    bytesRecorded
+                ).ConfigureAwait(false);
+            }
+
             private async Task ListenAsync(
                 NetworkStream networkStream,
                 CancellationToken cancellationToken)
@@ -92,45 +107,29 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
 
                     if (bytesRead == 0) break;
 
-                    string text = Encoding.UTF8.GetString(
+                    string response = Encoding.UTF8.GetString(
                         buffer,
                         0,
                         bytesRead
                     );
 
-                    _ = Task.Run(
-                        () =>
-                        {
-                            try
-                            {
-                                TranscriptionReceived?.Invoke(
-                                    this,
-                                    text
-                                );
-                            }
-                            catch (Exception handlerEx)
-                            {
-                                Debug.WriteLine(
-                                    $"{nameof(Client)}: TranscriptionReceived handler error: {handlerEx}"
-                                );
-                            }
-                        },
-                        CancellationToken.None
+                    TranscriptionReceived?.Invoke(
+                        this,
+                        GetTranscript(response)
                     );
                 }
             }
 
-            public async Task SendAudioDataAsync(
-                byte[] buffer,
-                int bytesRecorded)
+            private string GetTranscript(
+                string response)
             {
-                ArgumentNullException.ThrowIfNull(_networkStream);
+                Match match = _serverResponsePattern.Match(response);
+                if (!match.Success)
+                    throw new InvalidOperationException(
+                        $"Server response did not follow the expected pattern. Response was '{response}'. Pattern is '{_serverResponsePattern}'"
+                    );
 
-                await _networkStream.WriteAsync(
-                    buffer,
-                    0,
-                    bytesRecorded
-                ).ConfigureAwait(false);
+                return match.Groups[3].Value;
             }
         }
     }

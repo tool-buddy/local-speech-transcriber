@@ -2,7 +2,7 @@ using NAudio.Wave;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services.Audio
 {
-    public sealed class AudioRecorder : IDisposable
+    public sealed class AudioRecorder : IAudioRecorder, IDisposable
     {
         private readonly WaveInEvent _waveIn;
 
@@ -14,7 +14,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Audio
                     16000,
                     16,
                     1
-                )
+                ),
+                BufferMilliseconds = 64 // 1024 samples, same as the python client
             };
 
             _waveIn.DataAvailable += OnWaveDataAvailable;

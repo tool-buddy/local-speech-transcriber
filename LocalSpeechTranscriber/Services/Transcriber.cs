@@ -1,5 +1,6 @@
 ﻿using GregsStack.InputSimulatorStandard;
 using NAudio.Wave;
+using System.Text.RegularExpressions;
 using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
@@ -7,9 +8,9 @@ using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
     public sealed class Transcriber(
-        AudioRecorder audioRecorder,
+        IAudioRecorder audioRecorder,
         ISttEngine sttEngine,
-        InputSimulator inputSimulator,
+        IInputSimulator inputSimulator,
         IErrorDisplayer errorDisplayer)
         : IDisposable
     {
@@ -30,6 +31,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         public event EventHandler? Initialized;
         public event EventHandler? RecordingStarted;
         public event EventHandler? RecordingStopped;
+        //todo remove me, used only for debug
         public event EventHandler<string>? TextTyped;
 
 
@@ -76,36 +78,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             object? sender,
             string transcribedText)
         {
-            List<string> tokens =
-            [
-                .. transcribedText.Split(
-                    [' '],
-                    StringSplitOptions.RemoveEmptyEntries
-                )
-            ];
-
-            while (tokens.Count > 0
-                   && int.TryParse(
-                       tokens[0],
-                       out _
-                   ))
-                tokens.RemoveAt(0);
-
-            string textOnly = string.Join(
-                " ",
-                tokens
+            inputSimulator.Keyboard.TextEntry(transcribedText);
+            TranscriptionText += transcribedText;
+            TextTyped?.Invoke(
+                this,
+                transcribedText
             );
-
-            if (!string.IsNullOrWhiteSpace(textOnly))
-            {
-                string newText = textOnly; //todo is space needed?
-                TranscriptionText += newText;
-                inputSimulator.Keyboard.TextEntry(newText);
-                TextTyped?.Invoke(
-                    this,
-                    newText
-                );
-            }
         }
 
 

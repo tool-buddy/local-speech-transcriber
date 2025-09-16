@@ -23,7 +23,7 @@ namespace ToolBuddy.LocalSpeechTranscriber
             _host = GetHost();
             Start();
         }
-
+        
         private void Start()
         {
             _host.Start();
@@ -75,14 +75,13 @@ namespace ToolBuddy.LocalSpeechTranscriber
 
                         services.AddSingleton<UncaughtExceptionHandler>();
                         services.AddSingleton<IErrorDisplayer, WindowsErrorDisplayer>();
-                        services.AddSingleton<AudioRecorder>();
+                        services.AddSingleton<IAudioRecorder, AudioRecorder>();
                         services.AddSingleton<ISttEngine, WhisperStreamingSttEngine>();
-                        services.AddSingleton<InputSimulator>();
+                        services.AddSingleton<IInputSimulator, InputSimulator>();
                         services.AddSingleton<Transcriber>();
                         services.AddSingleton<RecordingHotkeyToggler>();
                         services.AddSingleton<SoundPlayer>();
                         services.AddSingleton<MainViewModel>();
-
                         services.AddSingleton<MainWindow>();
                     }
                 )
