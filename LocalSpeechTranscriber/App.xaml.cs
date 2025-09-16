@@ -5,6 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ToolBuddy.LocalSpeechTranscriber.Services;
+using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
+using ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys;
+using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
+using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 using ToolBuddy.LocalSpeechTranscriber.ViewModels;
 
@@ -13,13 +17,14 @@ namespace ToolBuddy.LocalSpeechTranscriber
     public partial class App : Application
     {
         private IHost _host = null!;
+        private UncaughtExceptionHandler _uncaughtExceptionHandler = null!;
 
         protected override void OnStartup(
             StartupEventArgs e)
         {
             _host = GetHost();
 
-            HandleUnhandledExceptions();
+            _uncaughtExceptionHandler = new UncaughtExceptionHandler(_host);
 
             Start();
         }
@@ -37,17 +42,9 @@ namespace ToolBuddy.LocalSpeechTranscriber
         protected override void OnExit(
             ExitEventArgs e)
         {
+            _uncaughtExceptionHandler.Dispose();
             _host.Dispose();
             base.OnExit(e);
-        }
-
-        private void HandleUnhandledExceptions()
-        {
-            //todo is this different from what WPF does by default?
-            //todo move in a dedicated class?
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            DispatcherUnhandledException += OnDispatcherUnhandledException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
         }
 
         private static IHost GetHost() =>
@@ -91,50 +88,5 @@ namespace ToolBuddy.LocalSpeechTranscriber
                     }
                 )
                 .Build();
-
-        #region Error handling
-
-        private void OnUnhandledException(
-            object sender,
-            UnhandledExceptionEventArgs e)
-        {
-            IErrorDisplayer errorDisplayer = _host.Services.GetRequiredService<IErrorDisplayer>();
-            if (e.ExceptionObject is Exception ex)
-                errorDisplayer.Exception(
-                    nameof(App),
-                    ex
-                );
-            else
-                errorDisplayer.Error(
-                    nameof(App),
-                    "An unknown error occurred."
-                );
-        }
-
-        private void OnDispatcherUnhandledException(
-            object sender,
-            DispatcherUnhandledExceptionEventArgs e)
-        {
-            IErrorDisplayer errorDisplayer = _host.Services.GetRequiredService<IErrorDisplayer>();
-            errorDisplayer.Exception(
-                nameof(App),
-                e.Exception
-            );
-            e.Handled = true;
-        }
-
-        private void OnUnobservedTaskException(
-            object? sender,
-            UnobservedTaskExceptionEventArgs e)
-        {
-            IErrorDisplayer errorDisplayer = _host.Services.GetRequiredService<IErrorDisplayer>();
-            errorDisplayer.Exception(
-                nameof(App),
-                e.Exception
-            );
-            e.SetObserved();
-        }
-
-        #endregion
     }
 }

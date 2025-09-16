@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement
 {
     public sealed class WindowsErrorDisplayer : IErrorDisplayer
     {

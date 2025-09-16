@@ -1,4 +1,4 @@
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement
 {
     //todo rename all
     public interface IErrorDisplayer

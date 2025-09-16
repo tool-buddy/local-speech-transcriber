@@ -1,4 +1,4 @@
-namespace ToolBuddy.LocalSpeechTranscriber.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
 {
     //todo document
     public interface ISpeechRecognizer

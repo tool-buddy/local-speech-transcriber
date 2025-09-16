@@ -12,7 +12,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private readonly Transcriber _transcriber;
         private readonly BitmapImage _notRecordingIcon;
         private readonly BitmapImage _recordingIcon;
-        private readonly Dispatcher _ui;
+        private readonly Dispatcher _dispatcher;
         private bool _isRecording;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -65,7 +65,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         public MainViewModel(
             Transcriber transcriber)
         {
-            _ui = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
+            _dispatcher = Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
 
             _transcriber = transcriber;
             _notRecordingIcon = new(new Uri("pack://application:,,,/Assets/not-recording.png"));
@@ -87,7 +87,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private void OnTranscriberInitialized(
             object? sender,
             EventArgs e) =>
-            _ui.BeginInvoke(
+            _dispatcher.BeginInvoke(
                 DispatcherPriority.DataBind,
                 new Action(() =>
                     {
@@ -104,7 +104,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private void OnRecordingStarted(
             object? sender,
             EventArgs e) =>
-            _ui.BeginInvoke(
+            _dispatcher.BeginInvoke(
                 DispatcherPriority.DataBind,
                 new Action(() => IsRecording = true)
             );
@@ -112,7 +112,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private void OnRecordingStopped(
             object? sender,
             EventArgs e) =>
-            _ui.BeginInvoke(
+            _dispatcher.BeginInvoke(
                 DispatcherPriority.DataBind,
                 new Action(() => IsRecording = false)
             );
@@ -120,7 +120,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private void OnTextTyped(
             object? sender,
             string _) =>
-            _ui.BeginInvoke(
+            _dispatcher.BeginInvoke(
                 DispatcherPriority.DataBind,
                 new Action(() =>
                     OnPropertyChanged(nameof(TranscriptionText))
