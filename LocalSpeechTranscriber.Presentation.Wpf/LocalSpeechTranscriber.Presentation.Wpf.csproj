@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>ToolBuddy.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<Product>Local Speech Transcriber</Product>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Assets\not-recording.png" />
+		<None Remove="Assets\recording.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.9" />
+		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.9" />
+		<PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+		<PackageReference Include="System.Windows.Extensions" Version="9.0.9" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Assets\not-recording.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Assets\recording.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.Local.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\Resources\whisper_streaming\**\*">
+			<Link>whisper_streaming\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Application\ToolBuddy.LocalSpeechTranscriber.Application.csproj" />
+	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Infrastructure\ToolBuddy.LocalSpeechTranscriber.Infrastructure.csproj" />
+	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Domain\ToolBuddy.LocalSpeechTranscriber.Domain.csproj" />
+	</ItemGroup>
+
+</Project>
