@@ -7,8 +7,9 @@ using ToolBuddy.LocalSpeechTranscriber.Services;
 using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys;
-using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 using ToolBuddy.LocalSpeechTranscriber.Services.Input;
+using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
+using ToolBuddy.LocalSpeechTranscriber.Services.Threading;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 using ToolBuddy.LocalSpeechTranscriber.ViewModels;
 
@@ -24,7 +25,7 @@ namespace ToolBuddy.LocalSpeechTranscriber
             _host = GetHost();
             Start();
         }
-        
+
         private void Start()
         {
             _host.Start();
@@ -77,10 +78,12 @@ namespace ToolBuddy.LocalSpeechTranscriber
                         services.AddSingleton<IErrorDisplayer, WindowsErrorDisplayer>();
                         services.AddSingleton<IAudioRecorder, AudioRecorder>();
                         services.AddSingleton<ISttEngine, WhisperStreamingSttEngine>();
+                        services.AddSingleton<IInputSimulator, InputSimulator>();
                         services.AddSingleton<IKeyboardOutput, InputSimulatorKeyboardOutput>();
                         services.AddSingleton<Transcriber>();
                         services.AddHostedService<RecordingHotkeyToggler>();
                         services.AddSingleton<SoundPlayer>();
+                        services.AddSingleton<IMainThreadDispatcher, WpfMainThreadDispatcher>();
                         services.AddSingleton<MainViewModel>();
                         services.AddSingleton<MainWindow>();
                     }

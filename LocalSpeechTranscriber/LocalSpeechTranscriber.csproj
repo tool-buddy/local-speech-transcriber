@@ -25,6 +25,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.9" />
 		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 		<PackageReference Include="System.Windows.Extensions" Version="9.0.9" />
 	</ItemGroup>
 
