@@ -8,23 +8,20 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 {
     public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
-        private readonly IMainThreadDispatcher _uiDispatcher;
         private readonly Transcriber _transcriber;
+        private readonly IMainThreadDispatcher _uiDispatcher;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RecordButtonText))]
         private RecordingState _recordingState = RecordingState.Initializing;
 
-        private bool IsInitialized => RecordingState != RecordingState.Initializing;
-
-        [RelayCommand(CanExecute = nameof(IsInitialized))]
-        private void ToggleRecording() => _transcriber.ToggleRecording();
+        private bool IsTranscriberInitialized => _transcriber.RecordingState != RecordingState.Initializing;
 
         public string RecordButtonText =>
             RecordingState switch
             {
                 RecordingState.Initializing => "Initializing...",
-                RecordingState.Ready => "Start Recording",
+                RecordingState.Idle => "Start Recording",
                 RecordingState.Recording => "Stop Recording",
                 _ => "Unknown state"
             };
@@ -37,35 +34,33 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             _transcriber = transcriber;
 
             _transcriber.Initialized += OnTranscriberInitialized;
-            _transcriber.RecordingStarted += OnRecordingStarted;
-            _transcriber.RecordingStopped += OnRecordingStopped;
+            _transcriber.RecordingStarted += OnRecordingChanged;
+            _transcriber.RecordingStopped += OnRecordingChanged;
         }
 
         public void Dispose()
         {
             _transcriber.Initialized -= OnTranscriberInitialized;
-            _transcriber.RecordingStarted -= OnRecordingStarted;
-            _transcriber.RecordingStopped -= OnRecordingStopped;
+            _transcriber.RecordingStarted -= OnRecordingChanged;
+            _transcriber.RecordingStopped -= OnRecordingChanged;
         }
+
+        [RelayCommand(CanExecute = nameof(IsTranscriberInitialized))]
+        private void ToggleRecording() => _transcriber.ToggleRecording();
 
         private void OnTranscriberInitialized(
             object? sender,
             EventArgs e) =>
             _uiDispatcher.Post(() =>
                 {
-                    RecordingState = RecordingState.Ready;
+                    RecordingState = _transcriber.RecordingState;
                     ToggleRecordingCommand.NotifyCanExecuteChanged();
                 }
             );
 
-        private void OnRecordingStarted(
+        private void OnRecordingChanged(
             object? sender,
             EventArgs e) =>
-            _uiDispatcher.Post(() => RecordingState = RecordingState.Recording);
-
-        private void OnRecordingStopped(
-            object? sender,
-            EventArgs e) =>
-            _uiDispatcher.Post(() => RecordingState = RecordingState.Ready);
+            _uiDispatcher.Post(() => RecordingState = _transcriber.RecordingState);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NHotkey;
 using NHotkey.Wpf;
+using ToolBuddy.LocalSpeechTranscriber.Domain;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 
@@ -52,7 +53,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys
                     _,
                     _) =>
                 {
-                    if (transcriber.IsInitialized)
+                    if (transcriber.RecordingState != RecordingState.Initializing)
                         transcriber.ToggleRecording();
                 }
             );

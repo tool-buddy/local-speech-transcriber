@@ -3,6 +3,7 @@ using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Services.Input;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
+using ToolBuddy.LocalSpeechTranscriber.Domain;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services
 {
@@ -13,9 +14,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         IErrorDisplayer errorDisplayer)
         : IDisposable
     {
-        private bool _isRecording;
 
-        public bool IsInitialized { get; private set; }
+        public RecordingState RecordingState { get; private set; } = RecordingState.Initializing;
 
         public void Dispose()
         {
@@ -40,7 +40,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         {
             audioRecorder.DataAvailable += OnAudioDataAvailable;
             sttEngine.Transcribed += OnSpeechTranscribed;
-            IsInitialized = true;
+            RecordingState = RecordingState.Idle;
             Initialized?.Invoke(
                 this,
                 EventArgs.Empty
@@ -75,9 +75,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         public void ToggleRecording()
         {
-            _isRecording = !_isRecording;
+            if (RecordingState == RecordingState.Initializing)
+                throw new InvalidOperationException("Transcriber is not initialized.");
 
-            if (_isRecording)
+            RecordingState = RecordingState == RecordingState.Recording
+                ? RecordingState.Idle
+                : RecordingState.Recording;
+
+            if (RecordingState == RecordingState.Recording)
                 StartRecording();
             else
                 StopRecording();
