@@ -22,7 +22,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
                 whisperSettings.Value.PythonExecutable
             );
 
-            _server.Started += OnStared;
+            _server.Started += OnServerStarted;
 
             _client = new Client(errorDisplayer);
         }
@@ -32,7 +32,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
             _client.TranscriptionReceived -= OnClientTranscriptionReceived;
             _client.Dispose();
 
-            _server.Started -= OnStared;
+            _server.Started -= OnServerStarted;
             _server.Dispose();
         }
 
@@ -51,7 +51,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Stt
             ).ConfigureAwait(false);
 
 
-        private async void OnStared(
+        private async void OnServerStarted(
             object? sender,
             EventArgs args)
         {
