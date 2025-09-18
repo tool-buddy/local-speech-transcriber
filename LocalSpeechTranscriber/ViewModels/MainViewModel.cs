@@ -12,7 +12,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
         private readonly Transcriber _transcriber;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(StatusText))]
         [NotifyPropertyChangedFor(nameof(RecordButtonText))]
         private RecordingState _recordingState = RecordingState.Initializing;
 
@@ -20,16 +19,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
 
         [RelayCommand(CanExecute = nameof(IsInitialized))]
         private void ToggleRecording() => _transcriber.ToggleRecording();
-
-
-        public string StatusText =>
-            RecordingState switch
-            {
-                RecordingState.Initializing => "Initializing...",
-                RecordingState.Ready => "Ready",
-                RecordingState.Recording => "Recording...",
-                _ => "Unknown state"
-            };
 
         public string RecordButtonText =>
             RecordingState switch
@@ -39,9 +28,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
                 RecordingState.Recording => "Stop Recording",
                 _ => "Unknown state"
             };
-
-        //todo remove
-        public string TranscriptionText => _transcriber.TranscriptionText;
 
         public MainViewModel(
             Transcriber transcriber,
@@ -53,7 +39,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             _transcriber.Initialized += OnTranscriberInitialized;
             _transcriber.RecordingStarted += OnRecordingStarted;
             _transcriber.RecordingStopped += OnRecordingStopped;
-            _transcriber.TextTyped += OnTextTyped;
         }
 
         public void Dispose()
@@ -61,7 +46,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             _transcriber.Initialized -= OnTranscriberInitialized;
             _transcriber.RecordingStarted -= OnRecordingStarted;
             _transcriber.RecordingStopped -= OnRecordingStopped;
-            _transcriber.TextTyped -= OnTextTyped;
         }
 
         private void OnTranscriberInitialized(
@@ -83,10 +67,5 @@ namespace ToolBuddy.LocalSpeechTranscriber.ViewModels
             object? sender,
             EventArgs e) =>
             _uiDispatcher.Post(() => RecordingState = RecordingState.Ready);
-
-        private void OnTextTyped(
-            object? sender,
-            string _) =>
-            _uiDispatcher.Post(() => OnPropertyChanged(nameof(TranscriptionText)));
     }
 }

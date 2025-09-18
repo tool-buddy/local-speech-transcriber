@@ -1,7 +1,7 @@
-﻿using ToolBuddy.LocalSpeechTranscriber.Services.Input;
-using NAudio.Wave;
+﻿using NAudio.Wave;
 using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
+using ToolBuddy.LocalSpeechTranscriber.Services.Input;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Services
@@ -15,9 +15,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
     {
         private bool _isRecording;
 
-        //todo just for debugging
-        public string TranscriptionText { get; private set; } = string.Empty;
-
         public bool IsInitialized { get; private set; }
 
         public void Dispose()
@@ -30,9 +27,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
         public event EventHandler? Initialized;
         public event EventHandler? RecordingStarted;
         public event EventHandler? RecordingStopped;
-        //todo remove me, used only for debug
-        public event EventHandler<string>? TextTyped;
-
 
         public void Initialize()
         {
@@ -75,15 +69,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
 
         private void OnSpeechTranscribed(
             object? sender,
-            string transcribedText)
-        {
+            string transcribedText) =>
             keyboardOutput.TypeText(transcribedText);
-            TranscriptionText += transcribedText;
-            TextTyped?.Invoke(
-                this,
-                transcribedText
-            );
-        }
 
 
         public void ToggleRecording()
