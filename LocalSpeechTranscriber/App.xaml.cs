@@ -8,6 +8,7 @@ using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
+using ToolBuddy.LocalSpeechTranscriber.Services.Input;
 using ToolBuddy.LocalSpeechTranscriber.Settings;
 using ToolBuddy.LocalSpeechTranscriber.ViewModels;
 
@@ -30,7 +31,6 @@ namespace ToolBuddy.LocalSpeechTranscriber
 
             _ = _host.Services.GetRequiredService<UncaughtExceptionHandler>();
             _host.Services.GetRequiredService<Transcriber>().Initialize();
-            _host.Services.GetRequiredService<RecordingHotkeyToggler>().Initialize();
             _ = _host.Services.GetRequiredService<SoundPlayer>();
             _host.Services.GetRequiredService<MainWindow>().Show();
         }
@@ -77,9 +77,9 @@ namespace ToolBuddy.LocalSpeechTranscriber
                         services.AddSingleton<IErrorDisplayer, WindowsErrorDisplayer>();
                         services.AddSingleton<IAudioRecorder, AudioRecorder>();
                         services.AddSingleton<ISttEngine, WhisperStreamingSttEngine>();
-                        services.AddSingleton<IInputSimulator, InputSimulator>();
+                        services.AddSingleton<IKeyboardOutput, InputSimulatorKeyboardOutput>();
                         services.AddSingleton<Transcriber>();
-                        services.AddSingleton<RecordingHotkeyToggler>();
+                        services.AddHostedService<RecordingHotkeyToggler>();
                         services.AddSingleton<SoundPlayer>();
                         services.AddSingleton<MainViewModel>();
                         services.AddSingleton<MainWindow>();

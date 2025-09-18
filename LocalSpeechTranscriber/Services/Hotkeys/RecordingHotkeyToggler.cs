@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NHotkey;
 using NHotkey.Wpf;
@@ -10,14 +11,15 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys
     public sealed class RecordingHotkeyToggler(
         IOptions<HotkeysSettings> hotkeysSettings,
         Transcriber transcriber,
-        IErrorDisplayer errorDisplayer) : IDisposable
+        IErrorDisplayer errorDisplayer) : IHostedService, IDisposable
     {
         private const string ToggleRecordingHotkeyName = "ToggleRecording";
 
         public void Dispose() =>
             HotkeyManager.Current.Remove(ToggleRecordingHotkeyName);
 
-        public void Initialize()
+        public Task StartAsync(
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -30,21 +32,22 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys
                     e
                 );
             }
+
+            return Task.CompletedTask;
         }
 
-        private void SetupHotkey()
+        public Task StopAsync(
+            CancellationToken cancellationToken)
         {
-            ModifierKeys modifierKeys = hotkeysSettings.Value.ToggleRecording.Modifiers.Aggregate(
-                ModifierKeys.None,
-                (
-                    current,
-                    modifier) => current | modifier
-            );
+            HotkeyManager.Current.Remove(ToggleRecordingHotkeyName);
+            return Task.CompletedTask;
+        }
 
+        private void SetupHotkey() =>
             HotkeyManager.Current.AddOrReplace(
                 ToggleRecordingHotkeyName,
                 hotkeysSettings.Value.ToggleRecording.Key,
-                modifierKeys,
+                GetModifierKeys(),
                 (
                     _,
                     _) =>
@@ -53,6 +56,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services.Hotkeys
                         transcriber.ToggleRecording();
                 }
             );
-        }
+
+        private ModifierKeys GetModifierKeys() =>
+            hotkeysSettings.Value.ToggleRecording.Modifiers.Aggregate(
+                ModifierKeys.None,
+                (
+                    current,
+                    modifier) => current | modifier
+            );
     }
 }

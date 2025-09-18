@@ -1,6 +1,5 @@
-﻿using GregsStack.InputSimulatorStandard;
+﻿using ToolBuddy.LocalSpeechTranscriber.Services.Input;
 using NAudio.Wave;
-using System.Text.RegularExpressions;
 using ToolBuddy.LocalSpeechTranscriber.Services.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Services.ErrorManagement;
 using ToolBuddy.LocalSpeechTranscriber.Services.Stt;
@@ -10,7 +9,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
     public sealed class Transcriber(
         IAudioRecorder audioRecorder,
         ISttEngine sttEngine,
-        IInputSimulator inputSimulator,
+        IKeyboardOutput keyboardOutput,
         IErrorDisplayer errorDisplayer)
         : IDisposable
     {
@@ -78,7 +77,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Services
             object? sender,
             string transcribedText)
         {
-            inputSimulator.Keyboard.TextEntry(transcribedText);
+            keyboardOutput.TypeText(transcribedText);
             TranscriptionText += transcribedText;
             TextTyped?.Invoke(
                 this,
