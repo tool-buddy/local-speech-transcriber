@@ -1,30 +1,27 @@
 # Local Speech Transcriber
 
-**Local Speech Transcriber** is a privacy-focused, real-time speech-to-text application for Windows.  
-It runs entirely on your local machine, ensuring that your data stays private.  
-The application captures audio from your microphone and uses a local Whisper-based server to transcribe it, automatically typing the output into any active window.
+**Local Speech Transcriber** is a local voice typing application built on OpenAI’s [Whisper](https://openai.com/index/whisper/).  
+
+## How It Works
+
+This WPF application captures audio from your microphone and uses a local Whisper-based STT server to transcribe speech, automatically typing the result into any active window.
 
 ---
 
 ## Development Status
 
-The project is already functional and structured well enough for third-party contributions.  
-However, it is still in an early phase, and code refactoring and testing are ongoing.
+The application is functional and designed with extensibility in mind. Since it already meets my personal usage needs, further development will slow down. Below is a list of potential features I may implement in the future:
 
-### Planned Improvements
-
-- Use [Simul Streaming](https://github.com/ufal/SimulStreaming) instead of [Whisper Streaming](https://github.com/ufal/whisper_streaming)  
-- Make the app cross-platform by adding a non-WPF presentation project, using **MAUI Blazor Hybrid**  
-- Improve architecture, add tests, and introduce other enhancements  
+- Cross-platform support via a non-WPF presentation layer using **MAUI Blazor Hybrid**  
+- Integration of a faster STT solution  
+- UI options for configuring transcription settings (model, language, etc.)  
 
 ---
 
 ## Usage
 
-1. Clone this project.  
-   (This will also clone [Whisper Streaming](https://github.com/ufal/whisper_streaming).)  
-2. Ensure you have **Python** and the required packages installed, and verify that you can run Whisper Streaming.  
-3. Update [`appsettings.json`](LocalSpeechTranscriber.Presentation.Wpf/appsettings.json)  
-   *(or create `appsettings.Local.json`)* with your settings.  
+1. Clone this repository. This will also clone [Whisper Streaming](https://github.com/ufal/whisper_streaming) and [SimulStreaming](https://github.com/ufal/SimulStreaming).
+2. Verify that Whisper Streaming runs successfully (needs Python and other dependencies).  
+3. Update [`appsettings.json`](LocalSpeechTranscriber.Presentation.Wpf/appsettings.json) (or create `appsettings.Local.json`) with your configuration.  
 4. Build and run [`LocalSpeechTranscriber.sln`](LocalSpeechTranscriber.sln).  
-5. Press the global hotkey (default: `Ctrl+Alt+Shift+D`) or click the **Start Recording** button to begin transcription.  
+5. Start transcription using the global hotkey (default: `Ctrl+Alt+Shift+D`) or by clicking the **Start Recording** button.  
