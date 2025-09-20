@@ -66,7 +66,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
                 throw new InvalidOperationException($"Invalid Hotkeys: Key '{hotkeysSettings.Value.ToggleRecording.Key}'");
 
             return key;
-
         }
 
         private ModifierKeys GetModifierKeys()

@@ -17,7 +17,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo
             string? product =
                 assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
 
-            return string.IsNullOrWhiteSpace(product)
+            return String.IsNullOrWhiteSpace(product)
                 ? fallbackName
                 : product;
         }

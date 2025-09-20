@@ -54,5 +54,5 @@ TestResult.xml
 nunit-*.xml
 
 
-/.vs
-/LocalSpeechTranscriber.Presentation.Wpf/appsettings.Local.json
+.vs/
+/ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf/appsettings.Local.json

@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36429.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSpeechTranscriber.Presentation.Wpf", "LocalSpeechTranscriber.Presentation.Wpf\LocalSpeechTranscriber.Presentation.Wpf.csproj", "{11B14BF5-0348-446B-8091-90606B6F7FED}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBuddy.LocalSpeechTranscriber.Application", "ToolBuddy.LocalSpeechTranscriber.Application\ToolBuddy.LocalSpeechTranscriber.Application.csproj", "{735395EE-E89A-5535-BD88-D21709538975}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBuddy.LocalSpeechTranscriber.Domain", "ToolBuddy.LocalSpeechTranscriber.Domain\ToolBuddy.LocalSpeechTranscriber.Domain.csproj", "{158A75B7-6B38-489A-4470-6EABA176B983}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBuddy.LocalSpeechTranscriber.Infrastructure", "ToolBuddy.LocalSpeechTranscriber.Infrastructure\ToolBuddy.LocalSpeechTranscriber.Infrastructure.csproj", "{1C64C3F5-BB3F-B37F-9938-A7EEF1B37F66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf", "ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf\ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.csproj", "{AD8EA735-33B9-41F8-4262-EB71E3E472A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11B14BF5-0348-446B-8091-90606B6F7FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11B14BF5-0348-446B-8091-90606B6F7FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11B14BF5-0348-446B-8091-90606B6F7FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11B14BF5-0348-446B-8091-90606B6F7FED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{735395EE-E89A-5535-BD88-D21709538975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{735395EE-E89A-5535-BD88-D21709538975}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{735395EE-E89A-5535-BD88-D21709538975}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{1C64C3F5-BB3F-B37F-9938-A7EEF1B37F66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C64C3F5-BB3F-B37F-9938-A7EEF1B37F66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C64C3F5-BB3F-B37F-9938-A7EEF1B37F66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD8EA735-33B9-41F8-4262-EB71E3E472A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD8EA735-33B9-41F8-4262-EB71E3E472A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD8EA735-33B9-41F8-4262-EB71E3E472A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD8EA735-33B9-41F8-4262-EB71E3E472A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
