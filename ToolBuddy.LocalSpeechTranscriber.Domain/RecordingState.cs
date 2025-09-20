@@ -2,8 +2,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Domain
 {
     public enum RecordingState
     {
-        Initializing,
-        Idle,
+        Uninitialized,
+        Ready,
         Recording
     }
 }

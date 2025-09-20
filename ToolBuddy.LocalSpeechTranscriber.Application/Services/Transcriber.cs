@@ -15,7 +15,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
             1
         );
 
-        public RecordingState RecordingState { get; private set; } = RecordingState.Initializing;
+        public RecordingState RecordingState { get; private set; } = RecordingState.Uninitialized;
 
         public void Dispose()
         {
@@ -40,7 +40,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
         {
             audioRecorder.DataAvailable += OnAudioDataAvailable;
             sttEngine.Transcribed += OnSpeechTranscribed;
-            RecordingState = RecordingState.Idle;
+            RecordingState = RecordingState.Ready;
             Initialized?.Invoke(
                 this,
                 EventArgs.Empty
@@ -88,11 +88,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
 
         public void ToggleRecording()
         {
-            if (RecordingState == RecordingState.Initializing)
+            if (RecordingState == RecordingState.Uninitialized)
                 throw new InvalidOperationException("Transcriber is not initialized.");
 
             RecordingState = RecordingState == RecordingState.Recording
-                ? RecordingState.Idle
+                ? RecordingState.Ready
                 : RecordingState.Recording;
 
             if (RecordingState == RecordingState.Recording)

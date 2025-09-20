@@ -15,17 +15,17 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RecordButtonText))]
-        private RecordingState _recordingState = RecordingState.Initializing;
+        private RecordingState _recordingState = RecordingState.Uninitialized;
 
         public string ProductName => _appInfo.ProductName;
 
-        private bool IsTranscriberInitialized => _transcriber.RecordingState != RecordingState.Initializing;
+        private bool IsTranscriberInitialized => _transcriber.RecordingState != RecordingState.Uninitialized;
 
         public string RecordButtonText =>
             RecordingState switch
             {
-                RecordingState.Initializing => "Initializing...",
-                RecordingState.Idle => "Start Recording",
+                RecordingState.Uninitialized => "Initializing...",
+                RecordingState.Ready => "Start Recording",
                 RecordingState.Recording => "Stop Recording",
                 _ => "Unknown state"
             };

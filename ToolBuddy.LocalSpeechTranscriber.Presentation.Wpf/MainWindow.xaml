@@ -25,7 +25,7 @@
                     <DataTrigger Binding="{Binding RecordingState}" Value="{x:Static domain:RecordingState.Recording}">
                         <Setter Property="Background" Value="{StaticResource BtnRecordingBrush}" />
                     </DataTrigger>
-                    <DataTrigger Binding="{Binding RecordingState}" Value="{x:Static domain:RecordingState.Initializing}">
+                    <DataTrigger Binding="{Binding RecordingState}" Value="{x:Static domain:RecordingState.Uninitialized}">
                         <Setter Property="Background" Value="{StaticResource BtnInitializingBrush}" />
                     </DataTrigger>
                 </Style.Triggers>

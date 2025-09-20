@@ -51,7 +51,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
                     _,
                     _) =>
                 {
-                    if (transcriber.RecordingState != RecordingState.Initializing)
+                    if (transcriber.RecordingState != RecordingState.Uninitialized)
                         transcriber.ToggleRecording();
                 }
             );
