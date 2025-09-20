@@ -1,16 +1,17 @@
 using Microsoft.Extensions.Logging;
+using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
 {
     internal sealed class SimulStreamingServer(
         int port,
         string whisperModel,
-        string pythonExecutable,
+        IPythonLocator pythonLocator,
         ILogger logger)
         : BaseWhisperServer(
             port,
             whisperModel,
-            pythonExecutable,
+            pythonLocator,
             logger
         )
     {

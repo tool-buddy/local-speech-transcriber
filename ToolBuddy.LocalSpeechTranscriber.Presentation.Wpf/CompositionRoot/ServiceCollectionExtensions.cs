@@ -6,6 +6,7 @@ using ToolBuddy.LocalSpeechTranscriber.Application.Services;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Input;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper;
+using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Python;
 using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services;
 using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo;
 using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio;
@@ -39,6 +40,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
             IConfiguration _)
         {
             services.AddSingleton<IAudioRecorder, NAudioRecorder>();
+            services.AddSingleton<IPythonLocator, CrossPlatformPythonLocator>();
             services.AddSingleton<ITranscriptionEngine, WhisperEngine>();
             services.AddSingleton<IKeyboardOutput, InputSimulatorKeyboardOutput>();
 

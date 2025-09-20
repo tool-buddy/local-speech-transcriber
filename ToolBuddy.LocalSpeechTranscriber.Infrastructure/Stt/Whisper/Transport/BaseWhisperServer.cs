@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
 {
     internal abstract class BaseWhisperServer(
         int port,
         string whisperModel,
-        string pythonExecutable,
+        IPythonLocator pythonLocator,
         ILogger logger)
         : IDisposable
     {
@@ -62,9 +63,16 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
 
         private Process? CreateServerProcess()
         {
+            if (!pythonLocator.TryGetPythonPath(
+                    out string? pythonPath
+                ))
+                throw new InvalidOperationException(
+                    "Could not locate a Python interpreter . Please install Python 3.9+ and ensure it is available on your PATH."
+                );
+
             ProcessStartInfo startInfo = new()
             {
-                FileName = pythonExecutable,
+                FileName = pythonPath,
                 Arguments = GetProcessArguments(),
                 UseShellExecute = false,
                 CreateNoWindow = true,

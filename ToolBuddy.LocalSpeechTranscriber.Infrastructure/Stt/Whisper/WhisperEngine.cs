@@ -15,6 +15,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
 
         public WhisperEngine(
             IOptions<WhisperSettings> whisperOptions,
+            IPythonLocator pythonLocator,
             IUserNotifier notifier,
             ILogger<WhisperEngine> logger)
         {
@@ -23,6 +24,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
 
             _server = CreateServer(
                 whisperOptions.Value,
+                pythonLocator,
                 logger
             );
             _server.Started += OnServerStarted;
@@ -58,6 +60,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
 
         private static BaseWhisperServer CreateServer(
             WhisperSettings settings,
+            IPythonLocator pythonLocator,
             ILogger<WhisperEngine> logger)
         {
             BaseWhisperServer result;
@@ -67,7 +70,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
                     result = new WhisperStreamingServer(
                         settings.Port,
                         settings.Model,
-                        settings.PythonExecutable,
+                        pythonLocator,
                         logger
                     );
                     break;
@@ -75,7 +78,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
                     result = new SimulStreamingServer(
                         settings.Port,
                         settings.Model,
-                        settings.PythonExecutable,
+                        pythonLocator,
                         logger
                     );
                     break;

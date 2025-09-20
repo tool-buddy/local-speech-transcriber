@@ -21,6 +21,6 @@ The application is functional and designed with extensibility in mind. Since it 
 
 1. Clone this repository. This will also clone [Whisper Streaming](https://github.com/ufal/whisper_streaming) and [SimulStreaming](https://github.com/ufal/SimulStreaming).
 2. Verify that Whisper Streaming runs successfully (needs Python and other dependencies).  
-3. Update [`appsettings.json`](LocalSpeechTranscriber.Presentation.Wpf/appsettings.json) (or create `appsettings.Local.json`) with your configuration. Refer to [WhisperSettings](ToolBuddy.LocalSpeechTranscriber.Application/Configuration/Options/WhisperSettings.cs) for details on the available configuration options.
+3. Update [`appsettings.json`](ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf/appsettings.json) if needed. Refer to [WhisperSettings](ToolBuddy.LocalSpeechTranscriber.Application/Configuration/Options/WhisperSettings.cs) for details on the available configuration options.
 4. Build and run [`LocalSpeechTranscriber.sln`](LocalSpeechTranscriber.sln).  
 5. Start transcription using the global hotkey (default: `Ctrl+Alt+Shift+D`) or by clicking the **Start Recording** button.  
