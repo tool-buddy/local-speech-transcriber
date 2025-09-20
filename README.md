@@ -15,7 +15,7 @@ The application is functional and designed with extensibility in mind. Since it 
 - Cross-platform support via a non-WPF presentation layer using **MAUI Blazor Hybrid**  
 - Integration of a faster STT solution  
 - UI options for configuring transcription settings (model, language, etc.)  
-- Taskbar icon
+- Taskbar/tray icon showing the recording state.
 
 ## Usage
 
