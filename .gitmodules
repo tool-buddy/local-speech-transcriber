@@ -1,3 +1,6 @@
 [submodule "Resources/whisper_streaming"]
 	path = Resources/whisper_streaming
 	url = https://github.com/ufal/whisper_streaming.git
+[submodule "Resources/SimulStreaming"]
+	path = Resources/SimulStreaming
+	url = https://github.com/ufal/SimulStreaming.git

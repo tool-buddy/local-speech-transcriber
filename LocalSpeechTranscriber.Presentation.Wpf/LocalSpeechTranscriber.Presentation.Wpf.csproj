@@ -48,13 +48,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="..\Resources\whisper_streaming\**\*">
-			<Link>whisper_streaming\%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Application\ToolBuddy.LocalSpeechTranscriber.Application.csproj" />
 	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Infrastructure\ToolBuddy.LocalSpeechTranscriber.Infrastructure.csproj" />
 	  <ProjectReference Include="..\ToolBuddy.LocalSpeechTranscriber.Domain\ToolBuddy.LocalSpeechTranscriber.Domain.csproj" />

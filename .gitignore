@@ -55,4 +55,4 @@ nunit-*.xml
 
 
 /.vs
-/LocalSpeechTranscriber/appsettings.Local.json
+/LocalSpeechTranscriber.Presentation.Wpf/appsettings.Local.json

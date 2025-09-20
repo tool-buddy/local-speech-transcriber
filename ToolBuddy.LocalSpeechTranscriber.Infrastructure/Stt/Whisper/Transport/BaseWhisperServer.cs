@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
 {
-    internal sealed class WhisperServerProcess(
+    internal abstract class BaseWhisperServer(
         int port,
         string whisperModel,
         string pythonExecutable,
@@ -13,6 +13,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
         private Process? _serverProcess;
 
         public int Port => port;
+        public string WhisperModel => whisperModel;
+
 
         public void Dispose()
         {
@@ -63,7 +65,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
             ProcessStartInfo startInfo = new()
             {
                 FileName = pythonExecutable,
-                Arguments = $@".\whisper_streaming\whisper_online_server.py --model {whisperModel} --port {port} --vad",
+                Arguments = GetProcessArguments(),
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -77,6 +79,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
             );
             return Process.Start(startInfo);
         }
+
+        protected abstract string GetProcessArguments();
 
         private void OnProcessExited(
             object? sender,
@@ -107,12 +111,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
             );
 
             if (args.Data.Contains(
-                    "critical",
-                    StringComparison.OrdinalIgnoreCase
+                    "critical"
                 )
                 || args.Data.Contains(
-                    "error",
-                    StringComparison.OrdinalIgnoreCase
+                    "error"
+                )
+                || args.Data.Contains(
+                    "Error"
                 ))
                 throw new InvalidOperationException(args.Data);
 

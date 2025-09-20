@@ -6,7 +6,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
     {
         public const string SectionName = "Whisper";
 
-        [Required]
         [RegularExpression(
             @"^(tiny\.en|tiny|base\.en|base|small\.en|small|medium\.en|medium|large-v1|large-v2|large-v3|large|large-v3-turbo)$",
             ErrorMessage =
@@ -14,11 +13,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
         )]
         public string Model { get; set; } = "large-v3-turbo";
 
+        [Required]
+        public WhisperImplementation Implementation { get; set; } = WhisperImplementation.WhisperStreaming;
+
         [Range(
             1,
             65535
         )]
-        public int Port { get; set; }
+        public int Port { get; set; } = 9090;
 
         [Required]
         public string PythonExecutable { get; set; } = String.Empty;

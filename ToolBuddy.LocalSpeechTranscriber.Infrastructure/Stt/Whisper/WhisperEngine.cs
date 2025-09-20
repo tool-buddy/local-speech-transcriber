@@ -8,9 +8,10 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
 {
     public sealed class WhisperEngine : ITranscriptionEngine, IDisposable
     {
-        private readonly WhisperClient _client;
         private readonly IUserNotifier _notifier;
-        private readonly WhisperServerProcess _server;
+        private readonly ILogger<WhisperEngine> _logger;
+        private readonly WhisperClient _client;
+        private readonly BaseWhisperServer _server;
 
         public WhisperEngine(
             IOptions<WhisperSettings> whisperOptions,
@@ -18,17 +19,18 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             ILogger<WhisperEngine> logger)
         {
             _notifier = notifier;
+            _logger = logger;
 
-            WhisperSettings settings = whisperOptions.Value;
-            _server = new WhisperServerProcess(
-                settings.Port,
-                settings.Model,
-                settings.PythonExecutable,
+            _server = CreateServer(
+                whisperOptions.Value,
                 logger
             );
             _server.Started += OnServerStarted;
 
-            _client = new WhisperClient(notifier);
+            _client = new WhisperClient(
+                notifier,
+                logger
+            );
         }
 
         public void Dispose()
@@ -53,6 +55,36 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
                 buffer,
                 bytesRecorded
             ).ConfigureAwait(false);
+
+        private static BaseWhisperServer CreateServer(
+            WhisperSettings settings,
+            ILogger<WhisperEngine> logger)
+        {
+            BaseWhisperServer result;
+            switch (settings.Implementation)
+            {
+                case WhisperImplementation.WhisperStreaming:
+                    result = new WhisperStreamingServer(
+                        settings.Port,
+                        settings.Model,
+                        settings.PythonExecutable,
+                        logger
+                    );
+                    break;
+                case WhisperImplementation.SimulStreaming:
+                    result = new SimulStreamingServer(
+                        settings.Port,
+                        settings.Model,
+                        settings.PythonExecutable,
+                        logger
+                    );
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return result;
+        }
 
         private async void OnServerStarted(
             object? sender,
@@ -84,9 +116,16 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
         private void OnTranscriptionReceived(
             object? sender,
             string text)
-            => Transcribed?.Invoke(
+        {
+            _logger.LogInformation(
+                "{Text}",
+                text
+            );
+
+            Transcribed?.Invoke(
                 this,
                 text
             );
+        }
     }
 }

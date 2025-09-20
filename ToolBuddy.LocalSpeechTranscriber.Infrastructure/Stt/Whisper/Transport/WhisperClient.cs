@@ -1,11 +1,12 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
 {
-    internal sealed class WhisperClient(IUserNotifier notifier) : IDisposable
+    internal sealed class WhisperClient(IUserNotifier notifier, ILogger logger) : IDisposable
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new();
         private readonly Regex _serverResponsePattern = new(@"^(\d+)\s(\d+)\s(.*)$");
@@ -80,11 +81,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
         {
             ArgumentNullException.ThrowIfNull(_networkStream);
 
-            await _networkStream.WriteAsync(
-                buffer,
-                0,
-                bytesRecorded
-            ).ConfigureAwait(false);
+            if (_tcpClient.Connected)
+                await _networkStream.WriteAsync(
+                    buffer,
+                    0,
+                    bytesRecorded
+                ).ConfigureAwait(false);
+            else
+                logger.LogError("Attempted to send audio data while not connected to the server.");
         }
 
         private async Task ListenAsync(
