@@ -1,6 +1,6 @@
 # Local Speech Transcriber
 
-**Local Speech Transcriber** a minimalistic voice typing application that uses OpenAI’s [Whisper](https://openai.com/index/whisper/) locally. 
+**Local Speech Transcriber** is a minimalistic voice typing application that uses OpenAI’s [Whisper](https://openai.com/index/whisper/) locally. 
 
 ![alt text](docs/ui.png)
 
@@ -15,7 +15,7 @@ The application is functional and designed with extensibility in mind. Since it 
 - Cross-platform support via a non-WPF presentation layer using **MAUI Blazor Hybrid**  
 - Integration of a faster STT solution  
 - UI options for configuring transcription settings (model, language, etc.)  
-- Taskbar icon.
+- Taskbar icon
 
 ## Usage
 
