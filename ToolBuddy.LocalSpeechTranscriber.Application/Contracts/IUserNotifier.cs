@@ -2,12 +2,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Contracts
 {
     public interface IUserNotifier
     {
-        void Error(
-            string errorSource,
-            string errorMessage);
+        void NotifyError(
+            string source,
+            string message);
 
-        void Exception(
-            string errorSource,
+        void NotifyError(
+            string source,
             Exception exception);
     }
 }

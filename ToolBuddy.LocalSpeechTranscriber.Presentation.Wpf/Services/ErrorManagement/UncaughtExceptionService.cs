@@ -29,12 +29,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             UnhandledExceptionEventArgs e)
         {
             if (e.ExceptionObject is Exception ex)
-                notifier.Exception(
+                notifier.NotifyError(
                     nameof(App),
                     ex
                 );
             else
-                notifier.Error(
+                notifier.NotifyError(
                     nameof(App),
                     "An unknown error occurred."
                 );
@@ -44,7 +44,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             object sender,
             DispatcherUnhandledExceptionEventArgs e)
         {
-            notifier.Exception(
+            notifier.NotifyError(
                 nameof(App),
                 e.Exception
             );
@@ -55,7 +55,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             object? sender,
             UnobservedTaskExceptionEventArgs e)
         {
-            notifier.Exception(
+            notifier.NotifyError(
                 nameof(App),
                 e.Exception
             );

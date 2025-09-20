@@ -62,14 +62,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
                         args.BytesRecorded
                     ).ConfigureAwait(false);
                 else
-                    userNotifier.Error(
+                    userNotifier.NotifyError(
                         nameof(Transcriber),
                         "Multiple transcriptions attempted, dropping audio data."
                     );
             }
             catch (Exception e)
             {
-                userNotifier.Exception(
+                userNotifier.NotifyError(
                     nameof(Transcriber),
                     e
                 );

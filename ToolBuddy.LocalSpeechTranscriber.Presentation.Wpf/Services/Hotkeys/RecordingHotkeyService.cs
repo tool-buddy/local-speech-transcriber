@@ -26,7 +26,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
             }
             catch (HotkeyAlreadyRegisteredException e)
             {
-                userNotifier.Exception(
+                userNotifier.NotifyError(
                     nameof(RecordingHotkeyService),
                     e
                 );

@@ -38,7 +38,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio
                     }
                     catch (Exception e)
                     {
-                        notifier.Exception(
+                        notifier.NotifyError(
                             nameof(SoundPlayerService),
                             e
                         );

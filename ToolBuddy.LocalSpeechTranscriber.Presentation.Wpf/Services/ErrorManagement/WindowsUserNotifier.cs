@@ -6,21 +6,21 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
 {
     public sealed class WindowsUserNotifier(IAppInfo appInfo) : IUserNotifier
     {
-        public void Error(
-            string errorSource,
-            string errorMessage) =>
+        public void NotifyError(
+            string source,
+            string message) =>
             MessageBox.Show(
-                $"{errorSource}: {errorMessage}",
+                $"{source}: {message}",
                 appInfo.ProductName,
                 MessageBoxButton.OK,
                 MessageBoxImage.Error
             );
 
-        public void Exception(
-            string errorSource,
+        public void NotifyError(
+            string source,
             Exception exception) =>
-            Error(
-                errorSource,
+            NotifyError(
+                source,
                 $"{exception.Message}\n{exception.StackTrace}"
             );
     }

@@ -67,7 +67,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
             );
 
             _ = _listeningTask.ContinueWith(
-                t => notifier.Exception(
+                t => notifier.NotifyError(
                     nameof(WhisperClient),
                     t.Exception ?? new Exception("Unknown error")
                 ),

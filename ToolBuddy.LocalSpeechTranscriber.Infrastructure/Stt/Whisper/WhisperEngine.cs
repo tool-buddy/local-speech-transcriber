@@ -106,7 +106,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             }
             catch (Exception e)
             {
-                _notifier.Exception(
+                _notifier.NotifyError(
                     nameof(WhisperEngine),
                     e
                 );
