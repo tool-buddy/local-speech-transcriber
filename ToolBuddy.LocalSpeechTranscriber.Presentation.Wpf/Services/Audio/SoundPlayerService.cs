@@ -11,7 +11,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio
     /// <param name="notifier">User notifier used to surface any playback errors.</param>
     public sealed class SoundPlayerService(Transcriber transcriber, IUserNotifier notifier) : IHostedService
     {
-
         /// <inheritdoc />
         public Task StartAsync(
             CancellationToken cancellationToken)

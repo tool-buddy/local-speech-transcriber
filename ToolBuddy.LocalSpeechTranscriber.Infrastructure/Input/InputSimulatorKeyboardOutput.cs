@@ -8,7 +8,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Input
     /// </summary>
     public sealed class InputSimulatorKeyboardOutput : IKeyboardOutput
     {
-        private readonly InputSimulator _inputSimulator = new ();
+        private readonly InputSimulator _inputSimulator = new();
 
         /// <inheritdoc />
         public void TypeText(
