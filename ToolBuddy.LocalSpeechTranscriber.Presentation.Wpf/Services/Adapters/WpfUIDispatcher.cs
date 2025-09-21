@@ -1,12 +1,13 @@
 using System.Windows.Threading;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Threading
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Adapters
 {
     /// <summary>
-    /// WPF-specific implementation of <see cref="IMainThreadDispatcher"/> that uses
+    /// WPF-specific implementation of <see cref="IUIDispatcher"/> that uses
     /// <see cref="Dispatcher.BeginInvoke(Delegate, object[])"/> to marshal work to the UI thread.
     /// </summary>
-    public sealed class WpfMainThreadDispatcher : IMainThreadDispatcher
+    public sealed class WpfUIDispatcher : IUIDispatcher
     {
         private readonly Dispatcher _dispatcher = System.Windows.Application.Current?.Dispatcher ?? Dispatcher.CurrentDispatcher;
 

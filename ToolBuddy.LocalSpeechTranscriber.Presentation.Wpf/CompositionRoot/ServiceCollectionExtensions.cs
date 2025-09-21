@@ -1,18 +1,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
-using ToolBuddy.LocalSpeechTranscriber.Application.Services;
+using ToolBuddy.LocalSpeechTranscriber.Application.Options;
+using ToolBuddy.LocalSpeechTranscriber.Application.Orchestration;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Audio;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Input;
+using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Python;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper;
-using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Python;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManagement;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Threading;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Adapters;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hosted;
 using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
@@ -32,14 +29,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddOptions<WhisperSettings>()
-                .Bind(configuration.GetSection(WhisperSettings.SectionName))
+            services.AddOptions<WhisperOptions>()
+                .Bind(configuration.GetSection(WhisperOptions.SectionName))
                 .ValidateDataAnnotations();
-            services.AddOptions<HotkeysSettings>()
-                .Bind(configuration.GetSection(HotkeysSettings.SectionName))
+            services.AddOptions<HotkeysOptions>()
+                .Bind(configuration.GetSection(HotkeysOptions.SectionName))
                 .ValidateDataAnnotations();
 
-            services.AddSingleton<Transcriber>();
+            services.AddSingleton<TranscriptionOrchestrator>();
 
             return services;
         }
@@ -54,8 +51,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
         {
             services.AddSingleton<IAudioRecorder, NAudioRecorder>();
             services.AddSingleton<IPythonLocator, CrossPlatformPythonLocator>();
-            services.AddSingleton<ITranscriptionEngine, WhisperEngine>();
-            services.AddSingleton<IKeyboardOutput, InputSimulatorKeyboardOutput>();
+            services.AddSingleton<ITranscriber, WhisperTranscriber>();
+            services.AddSingleton<IKeyboardTyper, InputSimulatorKeyboardTyper>();
 
             return services;
         }
@@ -68,14 +65,14 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
         public static IServiceCollection AddPresentationLayer(
             this IServiceCollection services)
         {
-            services.AddHostedService<UncaughtExceptionService>();
-            services.AddHostedService<TranscriberService>();
-            services.AddHostedService<RecordingHotkeyService>();
-            services.AddHostedService<SoundPlayerService>();
+            services.AddHostedService<UncaughtExceptionHandlingHostedService>();
+            services.AddHostedService<TranscriptionHostedService>();
+            services.AddHostedService<HotkeyRegistrationHostedService>();
+            services.AddHostedService<SoundPlayingHostedService>();
 
-            services.AddSingleton<IAppInfo, AppInfo>();
+            services.AddSingleton<IAppInfoProvider, AppInfoProvider>();
             services.AddSingleton<IUserNotifier, WindowsUserNotifier>();
-            services.AddSingleton<IMainThreadDispatcher, WpfMainThreadDispatcher>();
+            services.AddSingleton<IUIDispatcher, WpfUIDispatcher>();
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
 

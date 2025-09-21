@@ -1,9 +1,9 @@
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Threading
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions
 {
     /// <summary>
     /// Framework-agnostic dispatcher abstraction to marshal actions onto the UI/main thread.
     /// </summary>
-    public interface IMainThreadDispatcher
+    public interface IUIDispatcher
     {
         /// <summary>
         /// Posts an action to be executed on the UI/main thread asynchronously.

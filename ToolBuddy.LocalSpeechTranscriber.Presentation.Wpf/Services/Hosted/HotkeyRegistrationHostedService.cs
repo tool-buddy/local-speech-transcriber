@@ -3,22 +3,22 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NHotkey;
 using NHotkey.Wpf;
-using ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
-using ToolBuddy.LocalSpeechTranscriber.Application.Services;
+using ToolBuddy.LocalSpeechTranscriber.Application.Options;
+using ToolBuddy.LocalSpeechTranscriber.Application.Orchestration;
 using ToolBuddy.LocalSpeechTranscriber.Domain;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hosted
 {
     /// <summary>
-    /// Registers and handles the global hotkey that toggles audio recording.
+    /// Registers and handles the global hotkeys.
     /// </summary>
     /// <param name="hotkeysSettings">Provides configured hotkey options.</param>
-    /// <param name="transcriber">The application transcriber to control.</param>
+    /// <param name="transcriptionOrchestrator">The application transcriptionOrchestrator to control.</param>
     /// <param name="userNotifier">User notifier to surface registration errors.</param>
-    public sealed class RecordingHotkeyService(
-        IOptions<HotkeysSettings> hotkeysSettings,
-        Transcriber transcriber,
+    public sealed class HotkeyRegistrationHostedService(
+        IOptions<HotkeysOptions> hotkeysSettings,
+        TranscriptionOrchestrator transcriptionOrchestrator,
         IUserNotifier userNotifier) : IHostedService
     {
         private const string ToggleRecordingHotkeyName = "ToggleRecording";
@@ -34,7 +34,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
             catch (HotkeyAlreadyRegisteredException e)
             {
                 userNotifier.NotifyError(
-                    nameof(RecordingHotkeyService),
+                    nameof(HotkeyRegistrationHostedService),
                     e
                 );
             }
@@ -62,8 +62,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
                     _,
                     _) =>
                 {
-                    if (transcriber.RecordingState != RecordingState.Uninitialized)
-                        transcriber.ToggleRecording();
+                    if (transcriptionOrchestrator.RecordingState != RecordingState.Uninitialized)
+                        transcriptionOrchestrator.ToggleRecording();
                 }
             );
 

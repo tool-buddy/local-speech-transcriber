@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
+using ToolBuddy.LocalSpeechTranscriber.Application.Options;
 using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
@@ -10,25 +10,25 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
     /// Transcription engine that manages a local Whisper server process and a client connection
     /// to stream audio and receive transcription results.
     /// </summary>
-    public sealed class WhisperEngine : ITranscriptionEngine, IDisposable
+    public sealed class WhisperTranscriber : ITranscriber, IDisposable
     {
         private readonly IUserNotifier _notifier;
-        private readonly ILogger<WhisperEngine> _logger;
+        private readonly ILogger<WhisperTranscriber> _logger;
         private readonly WhisperClient _client;
-        private readonly BaseWhisperServer _server;
+        private readonly WhisperServerBase _server;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WhisperEngine"/> class.
+        /// Initializes a new instance of the <see cref="WhisperTranscriber"/> class.
         /// </summary>
         /// <param name="whisperOptions">Whisper configuration options.</param>
         /// <param name="pythonLocator">Locator used to find a Python interpreter.</param>
         /// <param name="notifier">User notification service for surfacing errors.</param>
         /// <param name="logger">Logger instance.</param>
-        public WhisperEngine(
-            IOptions<WhisperSettings> whisperOptions,
+        public WhisperTranscriber(
+            IOptions<WhisperOptions> whisperOptions,
             IPythonLocator pythonLocator,
             IUserNotifier notifier,
-            ILogger<WhisperEngine> logger)
+            ILogger<WhisperTranscriber> logger)
         {
             _notifier = notifier;
             _logger = logger;
@@ -78,33 +78,33 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
         /// <summary>
         /// Creates the appropriate Whisper server implementation based on settings.
         /// </summary>
-        /// <param name="settings">The Whisper server settings.</param>
+        /// <param name="options">The Whisper server settings.</param>
         /// <param name="pythonLocator">Python locator for server scripts.</param>
         /// <param name="logger">Logger.</param>
-        /// <returns>A configured <see cref="BaseWhisperServer"/> instance.</returns>
+        /// <returns>A configured <see cref="WhisperServerBase"/> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when an unknown implementation is specified.</exception>
-        private static BaseWhisperServer CreateServer(
-            WhisperSettings settings,
+        private static WhisperServerBase CreateServer(
+            WhisperOptions options,
             IPythonLocator pythonLocator,
-            ILogger<WhisperEngine> logger)
+            ILogger<WhisperTranscriber> logger)
         {
-            BaseWhisperServer result = settings.Implementation switch
+            WhisperServerBase result = options.ImplementationKind switch
             {
-                WhisperImplementation.WhisperStreaming => new WhisperStreamingServer(
-                    settings.Port,
-                    settings.Model,
+                WhisperImplementationKind.WhisperStreaming => new WhisperStreamingServer(
+                    options.Port,
+                    options.Model,
                     pythonLocator,
                     logger
                 ),
-                WhisperImplementation.SimulStreaming => new SimulStreamingServer(
-                    settings.Port,
-                    settings.Model,
+                WhisperImplementationKind.SimulStreaming => new SimulStreamingServer(
+                    options.Port,
+                    options.Model,
                     pythonLocator,
                     logger
                 ),
                 _ => throw new ArgumentOutOfRangeException(
-                    nameof(settings),
-                    $"Unknown value of {nameof(WhisperSettings.Implementation)}: {settings.Implementation}"
+                    nameof(options),
+                    $"Unknown value of {nameof(WhisperOptions.ImplementationKind)}: {options.ImplementationKind}"
                 )
             };
 
@@ -137,7 +137,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             catch (Exception e)
             {
                 _notifier.NotifyError(
-                    nameof(WhisperEngine),
+                    nameof(WhisperTranscriber),
                     e
                 );
             }

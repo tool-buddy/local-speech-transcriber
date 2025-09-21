@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
+namespace ToolBuddy.LocalSpeechTranscriber.Application.Options
 {
     /// <summary>
     /// Options that configure the Whisper-based speech-to-text engine.
     /// </summary>
-    public class WhisperSettings
+    public class WhisperOptions
     {
         /// <summary>
         /// The configuration section name containing Whisper settings.
@@ -29,7 +29,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
         /// Gets or sets the Whisper implementation to run.
         /// </summary>
         [Required]
-        public WhisperImplementation Implementation { get; set; } = WhisperImplementation.WhisperStreaming;
+        public WhisperImplementationKind ImplementationKind { get; set; } = WhisperImplementationKind.WhisperStreaming;
 
         /// <summary>
         /// Gets or sets the TCP port used by the Whisper server.

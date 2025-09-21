@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Python
+namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Python
 {
     /// <inheritdoc />
     public sealed class CrossPlatformPythonLocator : IPythonLocator

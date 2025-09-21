@@ -3,7 +3,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Contracts
     /// <summary>
     /// Provides speech-to-text capabilities for audio buffers.
     /// </summary>
-    public interface ITranscriptionEngine
+    public interface ITranscriber
     {
         /// <summary>
         /// Raised when a transcription is produced.

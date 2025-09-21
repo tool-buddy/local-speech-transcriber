@@ -2,13 +2,13 @@ using System.Windows.Threading;
 using Microsoft.Extensions.Hosting;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManagement
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hosted
 {
     /// <summary>
     /// Hosted service that centralizes handling of uncaught exceptions, and reports them via <see cref="IUserNotifier"/>.
     /// </summary>
     /// <param name="notifier">The user notifier used to surface error information.</param>
-    public sealed class UncaughtExceptionService(IUserNotifier notifier) : IHostedService
+    public sealed class UncaughtExceptionHandlingHostedService(IUserNotifier notifier) : IHostedService
     {
         /// <inheritdoc />
         public Task StartAsync(

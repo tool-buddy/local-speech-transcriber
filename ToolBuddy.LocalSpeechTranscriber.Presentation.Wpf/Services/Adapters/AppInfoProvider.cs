@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Adapters
 {
     /// <inheritdoc />
-    public sealed class AppInfo : IAppInfo
+    public sealed class AppInfoProvider : IAppInfoProvider
     {
         /// <inheritdoc />
         public string ProductName { get; } = RetrieveProductName();

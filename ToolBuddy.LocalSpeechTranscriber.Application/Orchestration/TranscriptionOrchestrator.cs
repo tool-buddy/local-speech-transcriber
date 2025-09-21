@@ -1,19 +1,19 @@
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 using ToolBuddy.LocalSpeechTranscriber.Domain;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
+namespace ToolBuddy.LocalSpeechTranscriber.Application.Orchestration
 {
     /// <summary>
     /// Coordinates audio recording and speech-to-text processing, and sends the transcribed text to the active window.
     /// </summary>
     /// <param name="audioRecorder">Component that captures audio data and raises data-available events.</param>
-    /// <param name="sttEngine">Speech-to-text engine that produces transcription from audio buffers.</param>
-    /// <param name="keyboardOutput">Service that types the recognized text into the active input control.</param>
+    /// <param name="transcriber">Speech-to-text engine that produces transcription from audio buffers.</param>
+    /// <param name="keyboardTyper">Service that types the recognized text into the active input control.</param>
     /// <param name="userNotifier">Service to notify users about errors and important events.</param>
-    public sealed class Transcriber(
+    public sealed class TranscriptionOrchestrator(
         IAudioRecorder audioRecorder,
-        ITranscriptionEngine sttEngine,
-        IKeyboardOutput keyboardOutput,
+        ITranscriber transcriber,
+        IKeyboardTyper keyboardTyper,
         IUserNotifier userNotifier)
         : IDisposable
     {
@@ -30,13 +30,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
         /// <inheritdoc />
         public void Dispose()
         {
-            sttEngine.Initialized -= OnSttEngineInitialized;
+            transcriber.Initialized -= OnSttEngineInitialized;
             audioRecorder.DataAvailable -= OnAudioDataAvailable;
-            sttEngine.Transcribed -= OnSpeechTranscribed;
+            transcriber.Transcribed -= OnSpeechTranscribed;
         }
 
         /// <summary>
-        /// Occurs when the transcriber has completed initialization and is ready.
+        /// Occurs when initialization is completed.
         /// </summary>
         public event EventHandler? Initialized;
 
@@ -55,8 +55,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
         /// </summary>
         public void Initialize()
         {
-            sttEngine.Initialized += OnSttEngineInitialized;
-            sttEngine.Initialize();
+            transcriber.Initialized += OnSttEngineInitialized;
+            transcriber.Initialize();
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
             EventArgs e)
         {
             audioRecorder.DataAvailable += OnAudioDataAvailable;
-            sttEngine.Transcribed += OnSpeechTranscribed;
+            transcriber.Transcribed += OnSpeechTranscribed;
             RecordingState = RecordingState.Ready;
             Initialized?.Invoke(
                 this,
@@ -96,20 +96,20 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
                 // todo define the waiting time once you switch to the new transcription engine. Also consider the TODO in NAudioRecorder.OnWaveDataAvailable
                 acquired = await _transcribeLock.WaitAsync(0).ConfigureAwait(false);
                 if (acquired)
-                    await sttEngine.TranscribeAsync(
+                    await transcriber.TranscribeAsync(
                         args.Buffer,
                         args.BytesRecorded
                     ).ConfigureAwait(false);
                 else
                     userNotifier.NotifyError(
-                        nameof(Transcriber),
+                        nameof(TranscriptionOrchestrator),
                         "Multiple transcriptions attempted, dropping audio data."
                     );
             }
             catch (Exception e)
             {
                 userNotifier.NotifyError(
-                    nameof(Transcriber),
+                    nameof(TranscriptionOrchestrator),
                     e
                 );
             }
@@ -128,7 +128,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
         private void OnSpeechTranscribed(
             object? sender,
             string transcribedText) =>
-            keyboardOutput.TypeText(transcribedText);
+            keyboardTyper.TypeText(transcribedText);
 
         /// <summary>
         /// Toggles the recording state between <see cref="RecordingState.Recording"/> and <see cref="Domain.RecordingState.Ready"/>.
@@ -137,7 +137,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Services
         public void ToggleRecording()
         {
             if (RecordingState == RecordingState.Uninitialized)
-                throw new InvalidOperationException("Transcriber is not initialized.");
+                throw new InvalidOperationException("TranscriptionOrchestrator is not initialized.");
 
             RecordingState = RecordingState == RecordingState.Recording
                 ? RecordingState.Ready

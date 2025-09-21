@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
+namespace ToolBuddy.LocalSpeechTranscriber.Application.Options
 {
     /// <summary>
     /// Root options bound from configuration for all application hotkeys.
     /// </summary>
-    public class HotkeysSettings
+    public class HotkeysOptions
     {
         /// <summary>
         /// The configuration section name containing hotkey settings.
@@ -16,6 +16,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
         /// Gets or sets the hotkey configuration to toggle audio recording on and off.
         /// </summary>
         [Required]
-        public required HotkeySetting ToggleRecording { get; set; }
+        public required HotkeyOption ToggleRecording { get; set; }
     }
 }

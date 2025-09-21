@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Application.Configuration.Options
+namespace ToolBuddy.LocalSpeechTranscriber.Application.Options
 {
     /// <summary>
     /// Represents a single hotkey definition consisting of a key and its potential modifier keys.
     /// </summary>
-    public class HotkeySetting
+    public class HotkeyOption
     {
         /// <summary>
         /// Gets or sets the main key of the hotkey (for example, "K" or "R").

@@ -29,6 +29,10 @@
 
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Stt\Whisper\Python\" />
+  </ItemGroup>
+
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>

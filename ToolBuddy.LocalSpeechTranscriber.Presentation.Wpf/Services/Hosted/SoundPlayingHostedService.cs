@@ -1,23 +1,23 @@
 using Microsoft.Extensions.Hosting;
 using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
-using ToolBuddy.LocalSpeechTranscriber.Application.Services;
+using ToolBuddy.LocalSpeechTranscriber.Application.Orchestration;
 
-namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio
+namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hosted
 {
     /// <summary>
     /// Plays short beep sounds to signal important application events.
     /// </summary>
-    /// <param name="transcriber">The application transcriber to subscribe to for lifecycle events.</param>
+    /// <param name="transcriptionOrchestrator">The application transcriptionOrchestrator to subscribe to for lifecycle events.</param>
     /// <param name="notifier">User notifier used to surface any playback errors.</param>
-    public sealed class SoundPlayerService(Transcriber transcriber, IUserNotifier notifier) : IHostedService
+    public sealed class SoundPlayingHostedService(TranscriptionOrchestrator transcriptionOrchestrator, IUserNotifier notifier) : IHostedService
     {
         /// <inheritdoc />
         public Task StartAsync(
             CancellationToken cancellationToken)
         {
-            transcriber.Initialized += OnTranscriberInitialized;
-            transcriber.RecordingStarted += OnRecordingStarted;
-            transcriber.RecordingStopped += OnRecordingStopped;
+            transcriptionOrchestrator.Initialized += OnTranscriberInitialized;
+            transcriptionOrchestrator.RecordingStarted += OnRecordingStarted;
+            transcriptionOrchestrator.RecordingStopped += OnRecordingStopped;
             return Task.CompletedTask;
         }
 
@@ -25,9 +25,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio
         public Task StopAsync(
             CancellationToken cancellationToken)
         {
-            transcriber.Initialized -= OnTranscriberInitialized;
-            transcriber.RecordingStarted -= OnRecordingStarted;
-            transcriber.RecordingStopped -= OnRecordingStopped;
+            transcriptionOrchestrator.Initialized -= OnTranscriberInitialized;
+            transcriptionOrchestrator.RecordingStarted -= OnRecordingStarted;
+            transcriptionOrchestrator.RecordingStopped -= OnRecordingStopped;
             return Task.CompletedTask;
         }
 
@@ -51,7 +51,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Audio
                     catch (Exception e)
                     {
                         notifier.NotifyError(
-                            nameof(SoundPlayerService),
+                            nameof(SoundPlayingHostedService),
                             e
                         );
                     }

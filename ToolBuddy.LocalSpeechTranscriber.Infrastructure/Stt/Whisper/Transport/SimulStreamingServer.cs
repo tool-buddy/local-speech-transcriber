@@ -11,7 +11,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
         string whisperModel,
         IPythonLocator pythonLocator,
         ILogger logger)
-        : BaseWhisperServer(
+        : WhisperServerBase(
             port,
             whisperModel,
             pythonLocator,

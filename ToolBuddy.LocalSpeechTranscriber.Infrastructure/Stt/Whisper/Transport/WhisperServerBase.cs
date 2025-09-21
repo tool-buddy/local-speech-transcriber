@@ -11,7 +11,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
     /// <param name="whisperModel">The Whisper model identifier to load.</param>
     /// <param name="pythonLocator">Service used to resolve a Python interpreter path.</param>
     /// <param name="logger">Logger used for diagnostic messages from the server process.</param>
-    internal abstract class BaseWhisperServer(
+    internal abstract class WhisperServerBase(
         int port,
         string whisperModel,
         IPythonLocator pythonLocator,

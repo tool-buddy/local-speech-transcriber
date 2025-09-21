@@ -1,9 +1,9 @@
-﻿namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo
+﻿namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions
 {
     /// <summary>
     /// Provides information about the current application.
     /// </summary>
-    public interface IAppInfo
+    public interface IAppInfoProvider
     {
         /// <summary>
         /// Gets the product name.

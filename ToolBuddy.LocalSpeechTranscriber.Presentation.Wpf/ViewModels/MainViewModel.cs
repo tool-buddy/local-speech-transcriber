@@ -1,9 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ToolBuddy.LocalSpeechTranscriber.Application.Services;
+using ToolBuddy.LocalSpeechTranscriber.Application.Orchestration;
 using ToolBuddy.LocalSpeechTranscriber.Domain;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo;
-using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Threading;
+using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Abstractions;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
 {
@@ -12,9 +11,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
     /// </summary>
     public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
-        private readonly IAppInfo _appInfo;
-        private readonly Transcriber _transcriber;
-        private readonly IMainThreadDispatcher _uiDispatcher;
+        private readonly IAppInfoProvider _appInfoProvider;
+        private readonly TranscriptionOrchestrator _transcriptionOrchestrator;
+        private readonly IUIDispatcher _uiDispatcher;
 
         /// <summary>
         /// Backing field for the current recording state.
@@ -27,9 +26,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
         /// <summary>
         /// Product name to display in the UI (e.g., window title).
         /// </summary>
-        public string ProductName => _appInfo.ProductName;
+        public string ProductName => _appInfoProvider.ProductName;
 
-        private bool IsTranscriberInitialized => _transcriber.RecordingState != RecordingState.Uninitialized;
+        private bool IsTranscriberInitialized => _transcriptionOrchestrator.RecordingState != RecordingState.Uninitialized;
 
         /// <summary>
         /// Gets the text displayed on the record/stop button based on <see cref="RecordingState"/>.
@@ -46,46 +45,46 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
         /// <summary>
         /// Initializes a new instance of the <see cref="MainViewModel"/> class.
         /// </summary>
-        /// <param name="appInfo">Provides product information for display.</param>
-        /// <param name="transcriber">Transcriber service used to control recording.</param>
+        /// <param name="appInfoProvider">Provides product information for display.</param>
+        /// <param name="transcriptionOrchestrator">Transcription orchestrator used to control recording.</param>
         /// <param name="uiDispatcher">Dispatcher used to marshal updates onto the UI thread.</param>
         public MainViewModel(
-            IAppInfo appInfo,
-            Transcriber transcriber,
-            IMainThreadDispatcher uiDispatcher)
+            IAppInfoProvider appInfoProvider,
+            TranscriptionOrchestrator transcriptionOrchestrator,
+            IUIDispatcher uiDispatcher)
         {
-            _appInfo = appInfo;
+            _appInfoProvider = appInfoProvider;
             _uiDispatcher = uiDispatcher;
-            _transcriber = transcriber;
+            _transcriptionOrchestrator = transcriptionOrchestrator;
 
-            _transcriber.Initialized += OnTranscriberInitialized;
-            _transcriber.RecordingStarted += OnRecordingChanged;
-            _transcriber.RecordingStopped += OnRecordingChanged;
+            _transcriptionOrchestrator.Initialized += OnTranscriptionOrchestratorInitialized;
+            _transcriptionOrchestrator.RecordingStarted += OnRecordingChanged;
+            _transcriptionOrchestrator.RecordingStopped += OnRecordingChanged;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            _transcriber.Initialized -= OnTranscriberInitialized;
-            _transcriber.RecordingStarted -= OnRecordingChanged;
-            _transcriber.RecordingStopped -= OnRecordingChanged;
+            _transcriptionOrchestrator.Initialized -= OnTranscriptionOrchestratorInitialized;
+            _transcriptionOrchestrator.RecordingStarted -= OnRecordingChanged;
+            _transcriptionOrchestrator.RecordingStopped -= OnRecordingChanged;
         }
 
         /// <summary>
-        /// Command that toggles the recording state. Only enabled once the transcriber is initialized.
+        /// Command that toggles the recording state. Only enabled once the transcriptionOrchestrator is initialized.
         /// </summary>
         [RelayCommand(CanExecute = nameof(IsTranscriberInitialized))]
-        private void ToggleRecording() => _transcriber.ToggleRecording();
+        private void ToggleRecording() => _transcriptionOrchestrator.ToggleRecording();
 
         /// <summary>
-        /// Handles the transcriber initialization event by updating the UI state and command availability.
+        /// Handles the transcriptionOrchestrator initialization event by updating the UI state and command availability.
         /// </summary>
-        private void OnTranscriberInitialized(
+        private void OnTranscriptionOrchestratorInitialized(
             object? sender,
             EventArgs e) =>
             _uiDispatcher.Post(() =>
                 {
-                    RecordingState = _transcriber.RecordingState;
+                    RecordingState = _transcriptionOrchestrator.RecordingState;
                     ToggleRecordingCommand.NotifyCanExecuteChanged();
                 }
             );
@@ -96,6 +95,6 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels
         private void OnRecordingChanged(
             object? sender,
             EventArgs e) =>
-            _uiDispatcher.Post(() => RecordingState = _transcriber.RecordingState);
+            _uiDispatcher.Post(() => RecordingState = _transcriptionOrchestrator.RecordingState);
     }
 }

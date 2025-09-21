@@ -6,7 +6,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Input
     /// <summary>
     /// Simulates keyboard input using GregsStack.InputSimulatorStandard.InputSimulator to type text into the active control.
     /// </summary>
-    public sealed class InputSimulatorKeyboardOutput : IKeyboardOutput
+    public sealed class InputSimulatorKeyboardTyper : IKeyboardTyper
     {
         private readonly InputSimulator _inputSimulator = new();
 
