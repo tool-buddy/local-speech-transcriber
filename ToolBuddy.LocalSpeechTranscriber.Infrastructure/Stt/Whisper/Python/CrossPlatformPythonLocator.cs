@@ -4,8 +4,10 @@ using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Python
 {
+    /// <inheritdoc />
     public sealed class CrossPlatformPythonLocator : IPythonLocator
     {
+        /// <inheritdoc />
         public bool TryGetPythonPath(
             out string? path)
         {
@@ -32,6 +34,12 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Python
             return false;
         }
 
+        /// <summary>
+        /// Executes the provided command to print the Python interpreter path and parses the result.
+        /// </summary>
+        /// <param name="commandAndArgs">The command and arguments to run (e.g., ["python3"]).</param>
+        /// <param name="path">On success, the resolved Python executable path.</param>
+        /// <returns>True if the path could be resolved; otherwise, false.</returns>
         private static bool TryProbe(
             string[] commandAndArgs,
             out string? path)

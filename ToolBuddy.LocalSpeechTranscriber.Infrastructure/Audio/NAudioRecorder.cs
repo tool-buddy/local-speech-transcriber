@@ -4,10 +4,16 @@ using ToolBuddy.LocalSpeechTranscriber.Domain;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Audio
 {
+    /// <summary>
+    /// NAudio-based implementation of <see cref="IAudioRecorder"/>.
+    /// </summary>
     public sealed class NAudioRecorder : IAudioRecorder, IDisposable
     {
         private readonly WaveInEvent _waveIn;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NAudioRecorder"/> class.
+        /// </summary>
         public NAudioRecorder()
         {
             _waveIn = new WaveInEvent
@@ -24,18 +30,27 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Audio
             _waveIn.DataAvailable += OnWaveDataAvailable;
         }
 
+        /// <inheritdoc />
         public event EventHandler<AudioDataEventArgs>? DataAvailable;
 
+        /// <inheritdoc />
         public void Start() => _waveIn.StartRecording();
 
+        /// <inheritdoc />
         public void Stop() => _waveIn.StopRecording();
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _waveIn.DataAvailable -= OnWaveDataAvailable;
             _waveIn.Dispose();
         }
 
+        /// <summary>
+        /// Handles incoming audio buffers from NAudio and raises <see cref="DataAvailable"/>.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The NAudio buffer payload.</param>
         private void OnWaveDataAvailable(
             object? sender,
             WaveInEventArgs e) =>

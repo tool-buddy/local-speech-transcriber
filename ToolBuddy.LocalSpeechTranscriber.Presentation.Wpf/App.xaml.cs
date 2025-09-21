@@ -64,7 +64,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf
                         services) =>
                     {
                         services.AddApplicationLayer(ctx.Configuration);
-                        services.AddInfrastructureLayer(ctx.Configuration);
+                        services.AddInfrastructureLayer();
                         services.AddPresentationLayer();
                     }
                 )

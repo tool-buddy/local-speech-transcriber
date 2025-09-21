@@ -17,8 +17,17 @@ using ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.ViewModels;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
 {
+    /// <summary>
+    /// DI registration helpers for the application, infrastructure, and presentation layers.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Registers the application layer services and binds configuration options.
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <param name="configuration">The application configuration root.</param>
+        /// <returns>The same service collection for chaining.</returns>
         public static IServiceCollection AddApplicationLayer(
             this IServiceCollection services,
             IConfiguration configuration)
@@ -35,9 +44,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
             return services;
         }
 
+        /// <summary>
+        /// Registers the infrastructure layer implementations (audio, Python locator, transcription engine, keyboard).
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <returns>The same service collection for chaining.</returns>
         public static IServiceCollection AddInfrastructureLayer(
-            this IServiceCollection services,
-            IConfiguration _)
+            this IServiceCollection services)
         {
             services.AddSingleton<IAudioRecorder, NAudioRecorder>();
             services.AddSingleton<IPythonLocator, CrossPlatformPythonLocator>();
@@ -47,6 +60,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
             return services;
         }
 
+        /// <summary>
+        /// Registers the presentation layer services, hosted services, view models, and main window.
+        /// </summary>
+        /// <param name="services">The service collection to add services to.</param>
+        /// <returns>The same service collection for chaining.</returns>
         public static IServiceCollection AddPresentationLayer(
             this IServiceCollection services)
         {
