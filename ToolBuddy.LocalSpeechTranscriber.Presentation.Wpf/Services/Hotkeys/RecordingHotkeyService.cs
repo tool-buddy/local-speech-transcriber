@@ -10,6 +10,12 @@ using ToolBuddy.LocalSpeechTranscriber.Domain;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
 {
+    /// <summary>
+    /// Registers and handles the global hotkey that toggles audio recording.
+    /// </summary>
+    /// <param name="hotkeysSettings">Provides configured hotkey options.</param>
+    /// <param name="transcriber">The application transcriber to control.</param>
+    /// <param name="userNotifier">User notifier to surface registration errors.</param>
     public sealed class RecordingHotkeyService(
         IOptions<HotkeysSettings> hotkeysSettings,
         Transcriber transcriber,
@@ -17,6 +23,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
     {
         private const string ToggleRecordingHotkeyName = "ToggleRecording";
 
+        /// <inheritdoc />
         public Task StartAsync(
             CancellationToken cancellationToken)
         {
@@ -35,6 +42,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task StopAsync(
             CancellationToken cancellationToken)
         {
@@ -42,6 +50,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Registers or replaces the toggle-recording hotkey based on configuration.
+        /// </summary>
         private void SetupHotkey() =>
             HotkeyManager.Current.AddOrReplace(
                 ToggleRecordingHotkeyName,
@@ -56,6 +67,10 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
                 }
             );
 
+        /// <summary>
+        /// Parses the configured key string into a <see cref="Key"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if the key string is invalid.</exception>
         private Key GetKey()
         {
             if (!Enum.TryParse(
@@ -68,6 +83,10 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.Hotkeys
             return key;
         }
 
+        /// <summary>
+        /// Parses configured modifier key strings into a combined <see cref="ModifierKeys"/> value.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if any modifier string is invalid.</exception>
         private ModifierKeys GetModifierKeys()
         {
             ModifierKeys result = ModifierKeys.None;

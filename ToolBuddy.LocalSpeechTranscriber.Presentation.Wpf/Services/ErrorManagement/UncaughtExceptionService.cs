@@ -4,8 +4,13 @@ using ToolBuddy.LocalSpeechTranscriber.Application.Contracts;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManagement
 {
+    /// <summary>
+    /// Hosted service that centralizes handling of uncaught exceptions, and reports them via <see cref="IUserNotifier"/>.
+    /// </summary>
+    /// <param name="notifier">The user notifier used to surface error information.</param>
     public sealed class UncaughtExceptionService(IUserNotifier notifier) : IHostedService
     {
+        /// <inheritdoc />
         public Task StartAsync(
             CancellationToken cancellationToken)
         {
@@ -15,6 +20,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public Task StopAsync(
             CancellationToken cancellationToken)
         {
@@ -24,6 +30,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Handles unhandled AppDomain exceptions.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The unhandled exception event arguments.</param>
         private void OnUnhandledException(
             object sender,
             UnhandledExceptionEventArgs e)
@@ -40,6 +51,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
                 );
         }
 
+        /// <summary>
+        /// Handles application exceptions.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The dispatcher unhandled exception event arguments.</param>
         private void OnDispatcherUnhandledException(
             object sender,
             DispatcherUnhandledExceptionEventArgs e)
@@ -51,6 +67,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.ErrorManage
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Handles unobserved task exceptions.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The unobserved task exception event arguments.</param>
         private void OnUnobservedTaskException(
             object? sender,
             UnobservedTaskExceptionEventArgs e)
