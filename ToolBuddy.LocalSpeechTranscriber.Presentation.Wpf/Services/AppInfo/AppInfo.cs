@@ -2,10 +2,17 @@
 
 namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.Services.AppInfo
 {
+    /// <inheritdoc />
     public sealed class AppInfo : IAppInfo
     {
+        /// <inheritdoc />
         public string ProductName { get; } = RetrieveProductName();
 
+        /// <summary>
+        /// Retrieves the product name from the entry or executing assembly.
+        /// Falls back to a predefined name if not available.
+        /// </summary>
+        /// <returns>The product name to display in the UI.</returns>
         private static string RetrieveProductName()
         {
             const string fallbackName = "Local Speech Transcriber";
