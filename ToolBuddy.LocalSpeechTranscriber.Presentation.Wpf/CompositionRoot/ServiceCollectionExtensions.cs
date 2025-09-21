@@ -68,9 +68,9 @@ namespace ToolBuddy.LocalSpeechTranscriber.Presentation.Wpf.CompositionRoot
         public static IServiceCollection AddPresentationLayer(
             this IServiceCollection services)
         {
+            services.AddHostedService<UncaughtExceptionService>();
             services.AddHostedService<TranscriberService>();
             services.AddHostedService<RecordingHotkeyService>();
-            services.AddHostedService<UncaughtExceptionService>();
             services.AddHostedService<SoundPlayerService>();
 
             services.AddSingleton<IAppInfo, AppInfo>();
