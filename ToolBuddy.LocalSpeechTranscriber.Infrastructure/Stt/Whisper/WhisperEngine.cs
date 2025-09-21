@@ -6,6 +6,10 @@ using ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport;
 
 namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
 {
+    /// <summary>
+    /// Transcription engine that manages a local Whisper server process and a client connection
+    /// to stream audio and receive transcription results.
+    /// </summary>
     public sealed class WhisperEngine : ITranscriptionEngine, IDisposable
     {
         private readonly IUserNotifier _notifier;
@@ -13,6 +17,13 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
         private readonly WhisperClient _client;
         private readonly BaseWhisperServer _server;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WhisperEngine"/> class.
+        /// </summary>
+        /// <param name="whisperOptions">Whisper configuration options.</param>
+        /// <param name="pythonLocator">Locator used to find a Python interpreter.</param>
+        /// <param name="notifier">User notification service for surfacing errors.</param>
+        /// <param name="logger">Logger instance.</param>
         public WhisperEngine(
             IOptions<WhisperSettings> whisperOptions,
             IPythonLocator pythonLocator,
@@ -35,6 +46,7 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             );
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _client.TranscriptionReceived -= OnTranscriptionReceived;
@@ -44,12 +56,17 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             _server.Dispose();
         }
 
+        /// <inheritdoc />
         public event EventHandler<string>? Transcribed;
+
+        /// <inheritdoc />
         public event EventHandler? Initialized;
 
+        /// <inheritdoc />
         public void Initialize() =>
             _server.Start();
 
+        /// <inheritdoc />
         public async Task TranscribeAsync(
             byte[] buffer,
             int bytesRecorded)
@@ -58,37 +75,47 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
                 bytesRecorded
             ).ConfigureAwait(false);
 
+        /// <summary>
+        /// Creates the appropriate Whisper server implementation based on settings.
+        /// </summary>
+        /// <param name="settings">The Whisper server settings.</param>
+        /// <param name="pythonLocator">Python locator for server scripts.</param>
+        /// <param name="logger">Logger.</param>
+        /// <returns>A configured <see cref="BaseWhisperServer"/> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when an unknown implementation is specified.</exception>
         private static BaseWhisperServer CreateServer(
             WhisperSettings settings,
             IPythonLocator pythonLocator,
             ILogger<WhisperEngine> logger)
         {
-            BaseWhisperServer result;
-            switch (settings.Implementation)
+            BaseWhisperServer result = settings.Implementation switch
             {
-                case WhisperImplementation.WhisperStreaming:
-                    result = new WhisperStreamingServer(
-                        settings.Port,
-                        settings.Model,
-                        pythonLocator,
-                        logger
-                    );
-                    break;
-                case WhisperImplementation.SimulStreaming:
-                    result = new SimulStreamingServer(
-                        settings.Port,
-                        settings.Model,
-                        pythonLocator,
-                        logger
-                    );
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                WhisperImplementation.WhisperStreaming => new WhisperStreamingServer(
+                    settings.Port,
+                    settings.Model,
+                    pythonLocator,
+                    logger
+                ),
+                WhisperImplementation.SimulStreaming => new SimulStreamingServer(
+                    settings.Port,
+                    settings.Model,
+                    pythonLocator,
+                    logger
+                ),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(settings),
+                    $"Unknown value of {nameof(WhisperSettings.Implementation)}: {settings.Implementation}"
+                )
+            };
 
             return result;
         }
 
+        /// <summary>
+        /// Handles the server Started event, connects the client, and signals initialization.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event data.</param>
         private async void OnServerStarted(
             object? sender,
             EventArgs args)
@@ -116,6 +143,11 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper
             }
         }
 
+        /// <summary>
+        /// Handles transcription results from the client and forwards them to subscribers.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="text">The text that was transcribed.</param>
         private void OnTranscriptionReceived(
             object? sender,
             string text)
