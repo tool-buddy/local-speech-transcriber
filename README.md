@@ -1,6 +1,6 @@
 # Local Speech Transcriber
 
-**Local Speech Transcriber** is a minimalistic voice typing application that uses OpenAI’s [Whisper](https://openai.com/index/whisper/) locally. 
+**Local Speech Transcriber** is a minimalist voice typing application that uses OpenAI’s [Whisper](https://openai.com/index/whisper/) locally. 
 
 ![alt text](docs/ui.png)
 
