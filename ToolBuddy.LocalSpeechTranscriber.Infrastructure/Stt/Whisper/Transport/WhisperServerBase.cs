@@ -20,6 +20,8 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
     {
         private Process? _serverProcess;
 
+        private bool _started;
+
         /// <summary>
         /// Gets the TCP port that the server will listen on.
         /// </summary>
@@ -165,22 +167,53 @@ namespace ToolBuddy.LocalSpeechTranscriber.Infrastructure.Stt.Whisper.Transport
                 args.Data
             );
 
-            if (args.Data.Contains(
-                    "critical"
-                )
-                || args.Data.Contains(
-                    "error"
-                )
-                || args.Data.Contains(
-                    "Error"
-                ))
-                throw new InvalidOperationException(args.Data);
+            if (!_started)
+            {
+                DetectInitializationErrors(
+                    args.Data
+                );
+                DetectInitializationCompletion(
+                    args.Data
+                );
+            }
+        }
 
-            if (args.Data.Contains($"Listening on('localhost', {port})"))
+        /// <summary>
+        /// Detects whether the initialization process has completed based on the python process data.
+        /// </summary>
+        /// <remarks>If the specified data indicates that the initialization is complete, the method raises the <see cref="Started"/> event.</remarks>
+        /// <param name="receivedData">The data to analyze for initialization completion.</param>
+        private void DetectInitializationCompletion(
+            string receivedData)
+        {
+            if (receivedData.Contains($"Listening on('localhost', {port})"))
+            {
+                _started = true;
                 Started?.Invoke(
                     this,
                     EventArgs.Empty
                 );
+            }
+        }
+
+        /// <summary>
+        /// Analyzes the server logs for initialization errors and throws an exception if any are detected.
+        /// </summary>
+        /// <param name="receivedData">The input data to analyze for errors. Must not be null or empty.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the input data contains error related keywords.</exception>
+        private static void DetectInitializationErrors(
+            string receivedData)
+        {
+            if (receivedData.Contains(
+                    "critical"
+                )
+                || receivedData.Contains(
+                    "error"
+                )
+                || receivedData.Contains(
+                    "Error"
+                ))
+                throw new InvalidOperationException(receivedData);
         }
     }
 }
