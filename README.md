@@ -1,3 +1,5 @@
+[![.Net Desktop](https://github.com/tool-buddy/local-speech-transcriber/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/tool-buddy/local-speech-transcriber/actions/workflows/dotnet-desktop.yml)
+
 # Local Speech Transcriber
 
 **Local Speech Transcriber** is a minimalist voice typing application that uses OpenAI’s [Whisper](https://openai.com/index/whisper/) locally. 
